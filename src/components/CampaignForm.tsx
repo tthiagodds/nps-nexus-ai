@@ -11,6 +11,8 @@ import { X, Plus, Mail, MessageSquare, Smartphone, Edit, Trash2, Star, Hash, Typ
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { SurveyPreview } from "./SurveyPreview";
+import { ChannelDistribution } from "./ChannelDistribution";
 
 interface CampaignFormProps {
   open: boolean;
@@ -27,12 +29,22 @@ interface SurveyModule {
   config: any;
 }
 
+interface Channel {
+  id: string;
+  name: string;
+  icon: any;
+  enabled: boolean;
+  percentage: number;
+}
+
 export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     name: campaign?.name || '',
     description: campaign?.description || '',
-    type: campaign?.type || 'Email',
+    channels: campaign?.channels || [
+      { id: 'email', name: 'Email', icon: Mail, enabled: true, percentage: 100 }
+    ],
     quarantine: campaign?.quarantine || 30,
     reminder: campaign?.reminder || 7,
     aiCategorization: campaign?.aiCategorization || false,
@@ -152,36 +164,12 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
 
       case 2:
         return (
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="type">Canal de Envio</Label>
-              <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Email">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
-                      Email
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="SMS">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="h-4 w-4" />
-                      SMS
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="Meta">
-                    <div className="flex items-center gap-2">
-                      <Smartphone className="h-4 w-4" />
-                      Meta (WhatsApp)
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="Misto">Misto (Email + SMS)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-6">
+            <ChannelDistribution
+              value={formData.channels}
+              onChange={(channels) => setFormData({...formData, channels})}
+            />
+            
             <div>
               <Label htmlFor="targetAudience">Público-alvo</Label>
               <Select value={formData.targetAudience} onValueChange={(value) => setFormData({...formData, targetAudience: value})}>
@@ -294,105 +282,112 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
 
       case 5:
         return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-semibold">Builder de Pesquisa</h3>
-                <p className="text-sm text-muted-foreground">
-                  Configure os módulos que compõem sua pesquisa NPS
-                </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold">Builder de Pesquisa</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Configure os módulos que compõem sua pesquisa NPS
+                  </p>
+                </div>
+                <Button onClick={() => setShowModuleForm(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Módulo
+                </Button>
               </div>
-              <Button onClick={() => setShowModuleForm(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar Módulo
-              </Button>
-            </div>
 
-            <div className="space-y-3">
-              {surveyModules.map((module, index) => (
-                <div key={module.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Badge variant="outline">{index + 1}</Badge>
-                    <div>
-                      <h4 className="font-medium">{module.title}</h4>
-                      <p className="text-sm text-muted-foreground capitalize">{module.type}</p>
+              <div className="space-y-3">
+                {surveyModules.map((module, index) => (
+                  <div key={module.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline">{index + 1}</Badge>
+                      <div>
+                        <h4 className="font-medium">{module.title}</h4>
+                        <p className="text-sm text-muted-foreground capitalize">{module.type}</p>
+                      </div>
+                      {module.required && (
+                        <Badge variant="destructive" className="text-xs">Obrigatório</Badge>
+                      )}
                     </div>
-                    {module.required && (
-                      <Badge variant="destructive" className="text-xs">Obrigatório</Badge>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="ghost">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    {!module.required && (
-                      <Button size="sm" variant="ghost" onClick={() => removeModule(module.id)}>
-                        <Trash2 className="h-4 w-4" />
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="ghost">
+                        <Edit className="h-4 w-4" />
                       </Button>
-                    )}
+                      {!module.required && (
+                        <Button size="sm" variant="ghost" onClick={() => removeModule(module.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Module Form Dialog */}
+              {showModuleForm && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="bg-background p-6 rounded-lg max-w-md w-full mx-4">
+                    <h3 className="text-lg font-semibold mb-4">Novo Módulo</h3>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Tipo de Módulo</Label>
+                        <Select 
+                          value={newModule.type} 
+                          onValueChange={(value) => setNewModule({...newModule, type: value as any})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {moduleTypes.map(type => (
+                              <SelectItem key={type.value} value={type.value}>
+                                <div className="flex items-center gap-2">
+                                  <type.icon className="h-4 w-4" />
+                                  {type.label}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label>Título/Pergunta</Label>
+                        <Input 
+                          value={newModule.title || ''}
+                          onChange={(e) => setNewModule({...newModule, title: e.target.value})}
+                          placeholder="Ex: Como você avalia nosso atendimento?"
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Switch 
+                          checked={newModule.required || false}
+                          onCheckedChange={(checked) => setNewModule({...newModule, required: checked})}
+                        />
+                        <Label>Campo obrigatório</Label>
+                      </div>
+
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setShowModuleForm(false)}>
+                          Cancelar
+                        </Button>
+                        <Button onClick={addModule}>
+                          Adicionar
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
 
-            {/* Module Form Dialog */}
-            {showModuleForm && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div className="bg-background p-6 rounded-lg max-w-md w-full mx-4">
-                  <h3 className="text-lg font-semibold mb-4">Novo Módulo</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <Label>Tipo de Módulo</Label>
-                      <Select 
-                        value={newModule.type} 
-                        onValueChange={(value) => setNewModule({...newModule, type: value as any})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {moduleTypes.map(type => (
-                            <SelectItem key={type.value} value={type.value}>
-                              <div className="flex items-center gap-2">
-                                <type.icon className="h-4 w-4" />
-                                {type.label}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label>Título/Pergunta</Label>
-                      <Input 
-                        value={newModule.title || ''}
-                        onChange={(e) => setNewModule({...newModule, title: e.target.value})}
-                        placeholder="Ex: Como você avalia nosso atendimento?"
-                      />
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <Switch 
-                        checked={newModule.required || false}
-                        onCheckedChange={(checked) => setNewModule({...newModule, required: checked})}
-                      />
-                      <Label>Campo obrigatório</Label>
-                    </div>
-
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => setShowModuleForm(false)}>
-                        Cancelar
-                      </Button>
-                      <Button onClick={addModule}>
-                        Adicionar
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Preview Column */}
+            <div className="lg:sticky lg:top-4">
+              <SurveyPreview modules={surveyModules} />
+            </div>
           </div>
         );
 
@@ -406,7 +401,7 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
               </p>
             </div>
 
-            {formData.type === 'Email' && (
+{formData.channels.some(c => c.enabled && c.id === 'email') && (
               <div>
                 <Label htmlFor="subject">Assunto do Email</Label>
                 <Input
@@ -458,7 +453,7 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-7xl h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
             {mode === 'create' ? 'Nova Campanha NPS' : 'Editar Campanha'}
@@ -486,18 +481,18 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
           ))}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Card>
-            <CardHeader>
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+          <Card className="flex-1 flex flex-col overflow-hidden">
+            <CardHeader className="flex-shrink-0">
               <CardTitle>{steps[currentStep - 1].title}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-y-auto">
               {renderStepContent()}
             </CardContent>
           </Card>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-shrink-0 pt-4 border-t bg-background">
             <Button 
               type="button" 
               variant="outline" 
