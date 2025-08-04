@@ -44,12 +44,16 @@ export function Dashboard() {
           <p className="text-muted-foreground">Overview</p>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            <Filter className="h-4 w-4 mr-2" />
+            Filtros
+          </Button>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "justify-start text-left font-normal",
+                  "justify-start text-left font-normal min-w-64",
                   !date && "text-muted-foreground"
                 )}
               >
@@ -68,7 +72,7 @@ export function Dashboard() {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0" align="end">
               <Calendar
                 initialFocus
                 mode="range"
@@ -80,10 +84,6 @@ export function Dashboard() {
               />
             </PopoverContent>
           </Popover>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtros
-          </Button>
         </div>
       </div>
 
