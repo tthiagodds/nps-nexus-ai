@@ -5,9 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Edit, Trash2, Play, Pause, BarChart3 } from "lucide-react";
 import Layout from "@/components/Layout";
+import { CampaignForm } from "@/components/CampaignForm";
 
 export default function Campaigns() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [showCampaignForm, setShowCampaignForm] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
 
   const campaigns = [
     {
@@ -46,6 +50,18 @@ export default function Campaigns() {
     campaign.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleNewCampaign = () => {
+    setSelectedCampaign(null);
+    setFormMode('create');
+    setShowCampaignForm(true);
+  };
+
+  const handleEditCampaign = (campaign: any) => {
+    setSelectedCampaign(campaign);
+    setFormMode('edit');
+    setShowCampaignForm(true);
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -54,7 +70,7 @@ export default function Campaigns() {
             <h1 className="text-3xl font-bold text-foreground">Campanhas NPS</h1>
             <p className="text-muted-foreground">Gerencie suas campanhas de pesquisa de satisfação</p>
           </div>
-          <Button>
+          <Button onClick={handleNewCampaign}>
             <Plus className="h-4 w-4 mr-2" />
             Nova Campanha
           </Button>
@@ -108,7 +124,7 @@ export default function Campaigns() {
                       <Button size="sm" variant="outline">
                         <BarChart3 className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleEditCampaign(campaign)}>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button size="sm" variant="outline">
@@ -125,6 +141,13 @@ export default function Campaigns() {
           </CardContent>
         </Card>
       </div>
+
+      <CampaignForm
+        open={showCampaignForm}
+        onOpenChange={setShowCampaignForm}
+        campaign={selectedCampaign}
+        mode={formMode}
+      />
     </Layout>
   );
 }

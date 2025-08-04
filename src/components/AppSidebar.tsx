@@ -14,7 +14,9 @@ import {
   Bot,
   FileType,
   Star,
-  Smartphone
+  Smartphone,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -23,16 +25,24 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const menuItems = [
   {
     title: "Dashboard",
+    icon: Home,
     items: [
       { title: "Overview", url: "/", icon: Home },
       { title: "Analytics", url: "/analytics", icon: TrendingUp },
@@ -40,6 +50,7 @@ const menuItems = [
   },
   {
     title: "NPS",
+    icon: Target,
     items: [
       { title: "Campanhas", url: "/campaigns", icon: Target },
       { title: "Relatórios", url: "/reports", icon: FileText },
@@ -47,7 +58,8 @@ const menuItems = [
     ]
   },
   {
-    title: "IA & Automação",
+    title: "IA",
+    icon: Brain,
     items: [
       { title: "Categorização IA", url: "/ai-categorization", icon: Brain },
       { title: "Respostas Automáticas", url: "/auto-responses", icon: Bot },
@@ -55,15 +67,17 @@ const menuItems = [
   },
   {
     title: "Comunicação",
+    icon: Mail,
     items: [
       { title: "Templates Email", url: "/email-templates", icon: FileType },
       { title: "Envio de Emails", url: "/email-sending", icon: Mail },
-      { title: "SMS & WhatsApp", url: "/messaging", icon: Smartphone },
+      { title: "SMS & Meta", url: "/messaging", icon: Smartphone },
       { title: "HSM Templates", url: "/hsm-templates", icon: Send },
     ]
   },
   {
-    title: "Administração",
+    title: "Admin",
+    icon: Settings,
     items: [
       { title: "Usuários", url: "/users", icon: Users },
       { title: "Configurações", url: "/settings", icon: Settings },
@@ -76,41 +90,76 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const isActive = (path: string) => currentPath === path;
-  const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-primary text-primary-foreground font-medium" : "hover:bg-accent";
+  const isGroupActive = (items: any[]) => items.some(item => isActive(item.url));
+  
+  const toggleExpanded = (title: string) => {
+    setExpandedItems(prev => 
+      prev.includes(title) 
+        ? prev.filter(item => item !== title)
+        : [...prev, title]
+    );
+  };
 
   return (
-    <Sidebar
-      className={collapsed ? "w-16" : "w-64"}
-      collapsible="icon"
-    >
+    <Sidebar className="w-16" collapsible="icon">
       <SidebarContent className="bg-card">
-        {menuItems.map((group) => (
-          <SidebarGroup key={group.title}>
-            {!collapsed && (
-              <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
-                {group.title}
-              </SidebarGroupLabel>
-            )}
-            
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <NavLink to={item.url} end className={getNavCls}>
-                        <item.icon className="h-4 w-4 flex-shrink-0" />
-                        {!collapsed && <span className="ml-3">{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((group) => {
+                const isGroupExpanded = expandedItems.includes(group.title);
+                const groupHasActive = isGroupActive(group.items);
+                
+                return (
+                  <Collapsible key={group.title} open={isGroupExpanded} onOpenChange={() => toggleExpanded(group.title)}>
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton 
+                          className={`w-full justify-between ${groupHasActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent'}`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <group.icon className="h-4 w-4 flex-shrink-0" />
+                            <span className="text-xs font-medium">{group.title}</span>
+                          </div>
+                          {isGroupExpanded ? (
+                            <ChevronDown className="h-3 w-3" />
+                          ) : (
+                            <ChevronRight className="h-3 w-3" />
+                          )}
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {group.items.map((item) => (
+                            <SidebarMenuSubItem key={item.title}>
+                              <SidebarMenuSubButton asChild>
+                                <NavLink 
+                                  to={item.url} 
+                                  end 
+                                  className={({ isActive }) =>
+                                    isActive 
+                                      ? "bg-primary text-primary-foreground font-medium" 
+                                      : "hover:bg-accent"
+                                  }
+                                >
+                                  <item.icon className="h-3 w-3 flex-shrink-0" />
+                                  <span className="text-xs">{item.title}</span>
+                                </NavLink>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );

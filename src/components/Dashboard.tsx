@@ -2,6 +2,8 @@ import { MetricCard } from "@/components/MetricCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { 
   Heart, 
   Send, 
@@ -12,10 +14,21 @@ import {
   Smile,
   BarChart3,
   MessageSquare,
-  Star
+  Star,
+  CalendarIcon,
+  Filter
 } from "lucide-react";
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export function Dashboard() {
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(2025, 0, 1),
+    to: new Date(2025, 0, 22),
+  });
+
   const npsData = [
     { nome: "NPS SMS", opinioes: 20, detratores: 5, neutros: 5, promotores: 10, nps: 54, nota: 10, cliente: "David", comentario: "Parabéns, eu gostei" },
     { nome: "NPS EMAIL", opinioes: 50, detratores: 10, neutros: 10, promotores: 30, nps: 49, nota: 2, cliente: "Thiago", comentario: "Muito ruim esse site" },
@@ -30,8 +43,47 @@ export function Dashboard() {
           <h1 className="text-3xl font-bold text-foreground">Bem vindo, David!</h1>
           <p className="text-muted-foreground">Overview</p>
         </div>
-        <div className="text-sm text-muted-foreground">
-          01/01/2025 até 22/01/2025
+        <div className="flex items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, "dd/MM/yyyy")} -{" "}
+                      {format(date.to, "dd/MM/yyyy")}
+                    </>
+                  ) : (
+                    format(date.from, "dd/MM/yyyy")
+                  )
+                ) : (
+                  <span>Selecionar período</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          <Button variant="outline" size="sm">
+            <Filter className="h-4 w-4 mr-2" />
+            Filtros
+          </Button>
         </div>
       </div>
 
@@ -44,21 +96,21 @@ export function Dashboard() {
           colorClass="bg-slate-600"
         />
         <MetricCard
-          title="Sabedores"
+          title="Disparos"
           value="131"
           icon={Send}
           colorClass="bg-slate-600"
         />
         <MetricCard
-          title="% Não respondeu"
-          value="85%"
+          title="Tx. de Resposta"
+          value="77%"
           icon={Clock}
           colorClass="bg-slate-600"
         />
         <MetricCard
-          title="% no tempo certo"
-          value="100%"
-          icon={CheckCircle}
+          title="Tx. de Comentários"
+          value="68%"
+          icon={MessageSquare}
           colorClass="bg-slate-600"
         />
       </div>
