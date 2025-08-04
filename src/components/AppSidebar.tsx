@@ -15,29 +15,9 @@ import {
   FileType,
   Star,
   Smartphone,
-  ChevronDown,
-  ChevronRight
+  Zap
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
-
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-} from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
 const menuItems = [
   {
@@ -53,6 +33,7 @@ const menuItems = [
     icon: Target,
     items: [
       { title: "Campanhas", url: "/campaigns", icon: Target },
+      { title: "Disparos", url: "/dispatches", icon: Zap },
       { title: "Relatórios", url: "/reports", icon: FileText },
       { title: "Opiniões", url: "/opinions", icon: MessageSquare },
     ]
@@ -61,8 +42,8 @@ const menuItems = [
     title: "IA",
     icon: Brain,
     items: [
-      { title: "Categorização IA", url: "/ai-categorization", icon: Brain },
-      { title: "Respostas Automáticas", url: "/auto-responses", icon: Bot },
+      { title: "Configurações IA", url: "/ai-settings", icon: Brain },
+      { title: "Categorizações", url: "/ai-categorization", icon: Bot },
     ]
   },
   {
@@ -80,87 +61,72 @@ const menuItems = [
     icon: Settings,
     items: [
       { title: "Usuários", url: "/users", icon: Users },
+      { title: "Config. Opiniões", url: "/opinion-settings", icon: MessageSquare },
       { title: "Configurações", url: "/settings", icon: Settings },
     ]
   }
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
-  const collapsed = state === "collapsed";
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
 
   const isActive = (path: string) => currentPath === path;
   const isGroupActive = (items: any[]) => items.some(item => isActive(item.url));
-  
-  const toggleExpanded = (title: string) => {
-    setExpandedItems(prev => 
-      prev.includes(title) 
-        ? prev.filter(item => item !== title)
-        : [...prev, title]
-    );
-  };
 
   return (
-    <Sidebar className="w-16" collapsible="icon">
-      <SidebarContent className="bg-card">
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((group) => {
-                const isGroupExpanded = expandedItems.includes(group.title);
-                const groupHasActive = isGroupActive(group.items);
-                
-                return (
-                  <Collapsible key={group.title} open={isGroupExpanded} onOpenChange={() => toggleExpanded(group.title)}>
-                    <SidebarMenuItem>
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton 
-                          className={`w-full justify-between ${groupHasActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent'}`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <group.icon className="h-4 w-4 flex-shrink-0" />
-                            <span className="text-xs font-medium">{group.title}</span>
-                          </div>
-                          {isGroupExpanded ? (
-                            <ChevronDown className="h-3 w-3" />
-                          ) : (
-                            <ChevronRight className="h-3 w-3" />
-                          )}
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          {group.items.map((item) => (
-                            <SidebarMenuSubItem key={item.title}>
-                              <SidebarMenuSubButton asChild>
-                                <NavLink 
-                                  to={item.url} 
-                                  end 
-                                  className={({ isActive }) =>
-                                    isActive 
-                                      ? "bg-primary text-primary-foreground font-medium" 
-                                      : "hover:bg-accent"
-                                  }
-                                >
-                                  <item.icon className="h-3 w-3 flex-shrink-0" />
-                                  <span className="text-xs">{item.title}</span>
-                                </NavLink>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    </SidebarMenuItem>
-                  </Collapsible>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <div className="fixed left-0 top-0 h-full w-16 bg-card border-r border-border z-50">
+      <div className="flex flex-col h-full py-4">
+        {menuItems.map((group) => {
+          const groupHasActive = isGroupActive(group.items);
+          
+          return (
+            <div
+              key={group.title}
+              className="relative"
+              onMouseEnter={() => setHoveredGroup(group.title)}
+              onMouseLeave={() => setHoveredGroup(null)}
+            >
+              <div
+                className={`
+                  flex items-center justify-center w-12 h-12 mx-2 rounded-lg mb-2 cursor-pointer transition-colors
+                  ${groupHasActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent text-muted-foreground hover:text-foreground'}
+                `}
+              >
+                <group.icon className="h-5 w-5" />
+              </div>
+
+              {/* Dropdown Menu */}
+              {hoveredGroup === group.title && (
+                <div className="absolute left-16 top-0 bg-popover border border-border rounded-lg shadow-lg min-w-48 z-50">
+                  <div className="p-2">
+                    <div className="text-xs font-semibold text-muted-foreground px-2 py-1 mb-1">
+                      {group.title}
+                    </div>
+                    {group.items.map((item) => (
+                      <NavLink
+                        key={item.title}
+                        to={item.url}
+                        className={({ isActive }) =>
+                          `flex items-center gap-2 px-2 py-2 rounded-md text-sm transition-colors ${
+                            isActive
+                              ? 'bg-primary text-primary-foreground'
+                              : 'hover:bg-accent text-foreground'
+                          }`
+                        }
+                      >
+                        <item.icon className="h-4 w-4" />
+                        {item.title}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

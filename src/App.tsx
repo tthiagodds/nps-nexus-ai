@@ -12,6 +12,10 @@ import Reports from "./pages/Reports";
 import Opinions from "./pages/Opinions";
 import AICategorization from "./pages/AICategorization";
 import Messaging from "./pages/Messaging";
+import Dispatches from "./pages/Dispatches";
+import OpinionSettings from "./pages/OpinionSettings";
+import AISettings from "./pages/AISettings";
+import HSMTemplates from "./pages/HSMTemplates";
 
 const queryClient = new QueryClient();
 
@@ -26,10 +30,14 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Index />} />
           <Route path="/campaigns" element={<Campaigns />} />
+          <Route path="/dispatches" element={<Dispatches />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/opinions" element={<Opinions />} />
           <Route path="/ai-categorization" element={<AICategorization />} />
+          <Route path="/ai-settings" element={<AISettings />} />
           <Route path="/messaging" element={<Messaging />} />
+          <Route path="/hsm-templates" element={<HSMTemplates />} />
+          <Route path="/opinion-settings" element={<OpinionSettings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
