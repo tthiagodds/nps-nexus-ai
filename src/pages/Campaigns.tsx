@@ -8,6 +8,7 @@ import Layout from "@/components/Layout";
 import { CampaignForm } from "@/components/CampaignForm";
 import { CampaignImportModal } from "@/components/CampaignImportModal";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { CampaignDetailsModal } from "@/components/CampaignDetailsModal";
 
 export default function Campaigns() {
   const [searchTerm, setSearchTerm] = useState("");

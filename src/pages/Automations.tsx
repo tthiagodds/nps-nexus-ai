@@ -303,7 +303,9 @@ export default function Automations() {
                       <Button variant="outline" size="sm">
                         {automation.status === "Ativo" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => {
+                        console.log('Editando automação:', automation.id);
+                      }}>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button variant="outline" size="sm">

@@ -19,10 +19,10 @@ export default function ChannelConfig() {
         <Tabs defaultValue="email" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="email">Email</TabsTrigger>
-            <TabsTrigger value="sms">SMS</TabsTrigger>
-            <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
+            <TabsTrigger value="sms">SMS - Infobip</TabsTrigger>
+            <TabsTrigger value="whatsapp">WhatsApp Business</TabsTrigger>
             <TabsTrigger value="whatsapp-enterprise">WhatsApp Enterprise</TabsTrigger>
-            <TabsTrigger value="ai">IA Automática</TabsTrigger>
+            <TabsTrigger value="ai">WAHA Integration</TabsTrigger>
           </TabsList>
 
           <TabsContent value="email" className="space-y-4">
@@ -212,21 +212,27 @@ export default function ChannelConfig() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bot className="h-5 w-5" />
-                  Envio Automático por IA
+                  Integração SMS - Infobip
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Switch id="ai-auto-send" />
-                  <Label htmlFor="ai-auto-send">Habilitar envio automático de mensagens por IA</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="infobip-api-key">API Key</Label>
+                    <Input id="infobip-api-key" placeholder="Chave da API Infobip" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="infobip-base-url">Base URL</Label>
+                    <Input id="infobip-base-url" placeholder="https://api.infobip.com" />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ai-trigger">Gatilho para Envio</Label>
-                  <Input id="ai-trigger" placeholder="ex: Score NPS < 7" />
+                  <Label htmlFor="infobip-sender">Sender ID</Label>
+                  <Input id="infobip-sender" placeholder="Nome do remetente" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ai-delay">Delay para Envio (minutos)</Label>
-                  <Input id="ai-delay" placeholder="30" type="number" />
+                  <Label htmlFor="infobip-scenario">Scenario Key</Label>
+                  <Input id="infobip-scenario" placeholder="Chave do cenário" />
                 </div>
                 <Button>
                   <Save className="h-4 w-4 mr-2" />

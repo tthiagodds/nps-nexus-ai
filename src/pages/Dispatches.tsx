@@ -3,15 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Upload, Users, Calendar } from "lucide-react";
+import { Plus, Search, Upload, Users, Calendar, MessageSquare } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { HSMDispatchModal } from "@/components/HSMDispatchModal";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function Dispatches() {
   const [showDispatchForm, setShowDispatchForm] = useState(false);
+  const [showHSMDispatch, setShowHSMDispatch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const dispatches = [
@@ -43,6 +45,18 @@ export default function Dispatches() {
     { id: 3, name: "NPS MISTO" }
   ];
 
+  const templates = [
+    { id: 1, name: "Confirmação de Pedido" },
+    { id: 2, name: "Atualização de Rastreio" },
+    { id: 3, name: "Pesquisa de Satisfação" }
+  ];
+
+  const availableFields = [
+    { name: 'nome_cliente', label: 'Nome do Cliente', type: 'text' as const },
+    { name: 'numero_pedido', label: 'Número do Pedido', type: 'text' as const },
+    { name: 'valor_pedido', label: 'Valor do Pedido', type: 'currency' as const }
+  ];
+
   const filteredDispatches = dispatches.filter(dispatch =>
     dispatch.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -55,13 +69,23 @@ export default function Dispatches() {
             <h1 className="text-3xl font-bold text-foreground">Disparos</h1>
             <p className="text-muted-foreground">Gerencie disparos avulsos de pesquisas NPS</p>
           </div>
+          <div className="flex gap-2">
+            <Dialog open={showDispatchForm} onOpenChange={setShowDispatchForm}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Novo Disparo Manual
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+            
+            <Button variant="outline" onClick={() => setShowHSMDispatch(true)}>
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Disparo HSM
+            </Button>
+          </div>
+          
           <Dialog open={showDispatchForm} onOpenChange={setShowDispatchForm}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Disparo
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Novo Disparo Manual</DialogTitle>
@@ -87,6 +111,22 @@ export default function Dispatches() {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+                </div>
+
+                {/* Campos obrigatórios para disparo manual */}
+                <div className="space-y-4">
+                  <h3 className="font-medium text-foreground">Campos Obrigatórios</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="nome-cliente">Nome do Cliente *</Label>
+                      <Input id="nome-cliente" placeholder="Nome completo do cliente" required />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="identificador-cliente">Identificador do Cliente *</Label>
+                      <Input id="identificador-cliente" placeholder="CPF, ID ou código único" required />
+                    </div>
                   </div>
                 </div>
 
@@ -133,6 +173,14 @@ export default function Dispatches() {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* HSM Dispatch Modal */}
+        <HSMDispatchModal
+          open={showHSMDispatch}
+          onOpenChange={setShowHSMDispatch}
+          templates={templates}
+          availableFields={availableFields}
+        />
 
         <Card>
           <CardHeader>
