@@ -24,6 +24,7 @@ import Automations from "./pages/Automations";
 import AutomationReports from "./pages/reports/AutomationReports";
 import OpinionReports from "./pages/reports/OpinionReports";
 import DispatchReports from "./pages/reports/DispatchReports";
+import SystemSettings from "./pages/SystemSettings";
 import UserManagement from "./pages/UserManagement";
 import SurveyResponse from "./pages/SurveyResponse";
 
@@ -64,6 +65,7 @@ const App = () => (
           <Route path="/dispatches" element={<Dispatches />} />
           <Route path="/hsm-templates" element={<HSMTemplates />} />
           <Route path="/user-management" element={<UserManagement />} />
+          <Route path="/system-settings" element={<SystemSettings />} />
           
           {/* Survey Response Page */}
           <Route path="/survey/:campaignId" element={<SurveyResponse />} />

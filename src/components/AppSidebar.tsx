@@ -69,6 +69,13 @@ const menuItems = [
       { title: "Disparos", url: "/dispatches", icon: Zap },
       { title: "HSM Templates", url: "/hsm-templates", icon: Send },
     ]
+  },
+  {
+    title: "Sistema",
+    icon: Settings,
+    items: [
+      { title: "Configurações", url: "/system-settings", icon: Settings },
+    ]
   }
 ];
 

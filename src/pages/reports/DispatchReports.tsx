@@ -30,10 +30,25 @@ export default function DispatchReports() {
       channel: "SMS",
       recipient: "cliente@email.com",
       sentAt: "2025-01-22 14:30",
+      deliveredAt: "2025-01-22 14:30:15",
       status: "Entregue",
       opened: true,
+      openedAt: "2025-01-22 14:35:20",
       responded: false,
-      templateUsed: "Template SMS NPS - Direto"
+      templateUsed: "Template SMS NPS - Direto",
+      messageId: "MSG_001",
+      cost: "R$ 0,08",
+      channelProvider: "Infobip SMS",
+      userId: "user_123",
+      userAgent: "Mobile WhatsApp",
+      ipAddress: "192.168.1.100",
+      country: "Brasil",
+      region: "São Paulo",
+      sentiment: "Neutro",
+      responseTime: null,
+      retryCount: 0,
+      errorCode: null,
+      errorMessage: null
     },
     {
       id: 2,
@@ -41,10 +56,26 @@ export default function DispatchReports() {
       channel: "Email",
       recipient: "joao@empresa.com",
       sentAt: "2025-01-22 14:25",
+      deliveredAt: "2025-01-22 14:25:10",
       status: "Entregue",
       opened: true,
+      openedAt: "2025-01-22 14:30:45",
       responded: true,
-      templateUsed: "Template Email NPS - Corporativo"
+      respondedAt: "2025-01-22 15:10:30",
+      templateUsed: "Template Email NPS - Corporativo",
+      messageId: "MSG_002",
+      cost: "R$ 0,05",
+      channelProvider: "Email SMTP",
+      userId: "user_456",
+      userAgent: "Desktop Outlook",
+      ipAddress: "192.168.1.101",
+      country: "Brasil",
+      region: "Rio de Janeiro",
+      sentiment: "Positivo",
+      responseTime: "40 min",
+      retryCount: 0,
+      errorCode: null,
+      errorMessage: null
     },
     {
       id: 3,
@@ -52,10 +83,25 @@ export default function DispatchReports() {
       channel: "WhatsApp",
       recipient: "+5511999999999",
       sentAt: "2025-01-22 14:20",
+      deliveredAt: null,
       status: "Pendente",
       opened: false,
+      openedAt: null,
       responded: false,
-      templateUsed: "HSM NPS Satisfação"
+      templateUsed: "HSM NPS Satisfação",
+      messageId: "MSG_003",
+      cost: "R$ 0,12",
+      channelProvider: "WAHA WhatsApp",
+      userId: "user_789",
+      userAgent: "Mobile WhatsApp",
+      ipAddress: "192.168.1.102",
+      country: "Brasil",
+      region: "Minas Gerais",
+      sentiment: null,
+      responseTime: null,
+      retryCount: 1,
+      errorCode: "RATE_LIMIT",
+      errorMessage: "Taxa de envio excedida"
     },
     {
       id: 4,
@@ -63,10 +109,25 @@ export default function DispatchReports() {
       channel: "Email",
       recipient: "maria@loja.com",
       sentAt: "2025-01-22 14:15",
+      deliveredAt: null,
       status: "Falhou",
       opened: false,
+      openedAt: null,
       responded: false,
-      templateUsed: "Template Email NPS - Simples"
+      templateUsed: "Template Email NPS - Simples",
+      messageId: "MSG_004",
+      cost: "R$ 0,00",
+      channelProvider: "Email SMTP",
+      userId: "user_101",
+      userAgent: null,
+      ipAddress: "192.168.1.103",
+      country: "Brasil",
+      region: "Bahia",
+      sentiment: null,
+      responseTime: null,
+      retryCount: 3,
+      errorCode: "INVALID_EMAIL",
+      errorMessage: "Endereço de email inválido"
     },
     {
       id: 5,
@@ -74,10 +135,53 @@ export default function DispatchReports() {
       channel: "SMS",
       recipient: "+5511888888888",
       sentAt: "2025-01-22 14:10",
+      deliveredAt: "2025-01-22 14:10:05",
       status: "Entregue",
       opened: false,
+      openedAt: null,
       responded: true,
-      templateUsed: "Template SMS NPS - Direto"
+      respondedAt: "2025-01-22 14:45:20",
+      templateUsed: "Template SMS NPS - Direto",
+      messageId: "MSG_005",
+      cost: "R$ 0,08",
+      channelProvider: "Infobip SMS",
+      userId: "user_202",
+      userAgent: "Mobile",
+      ipAddress: "192.168.1.104",
+      country: "Brasil",
+      region: "Paraná",
+      sentiment: "Negativo",
+      responseTime: "35 min",
+      retryCount: 0,
+      errorCode: null,
+      errorMessage: null
+    },
+    {
+      id: 6,
+      campaign: "NPS WhatsApp Enterprise",
+      channel: "WhatsApp Enterprise",
+      recipient: "+5511777777777",
+      sentAt: "2025-01-22 14:05",
+      deliveredAt: "2025-01-22 14:05:02",
+      status: "Entregue",
+      opened: true,
+      openedAt: "2025-01-22 14:15:30",
+      responded: true,
+      respondedAt: "2025-01-22 14:20:15",
+      templateUsed: "HSM Enterprise Premium",
+      messageId: "MSG_006",
+      cost: "R$ 0,25",
+      channelProvider: "WhatsApp Enterprise API",
+      userId: "user_303",
+      userAgent: "Mobile WhatsApp Business",
+      ipAddress: "192.168.1.105",
+      country: "Brasil",
+      region: "Santa Catarina",
+      sentiment: "Muito Positivo",
+      responseTime: "5 min",
+      retryCount: 0,
+      errorCode: null,
+      errorMessage: null
     }
   ];
 
@@ -210,44 +314,80 @@ export default function DispatchReports() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>ID Mensagem</TableHead>
                   <TableHead>Campanha</TableHead>
-                  <TableHead>Canal</TableHead>
+                  <TableHead>Canal/Provedor</TableHead>
                   <TableHead>Destinatário</TableHead>
-                  <TableHead>Template Usado</TableHead>
-                  <TableHead>Enviado em</TableHead>
+                  <TableHead>Template</TableHead>
+                  <TableHead>Enviado</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Aberto</TableHead>
-                  <TableHead>Respondido</TableHead>
+                  <TableHead>Custo</TableHead>
+                  <TableHead>Localização</TableHead>
+                  <TableHead>Sentimento</TableHead>
+                  <TableHead>Temp. Resposta</TableHead>
+                  <TableHead>Tentativas</TableHead>
                   <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredDispatches.map((dispatch) => (
                   <TableRow key={dispatch.id}>
+                    <TableCell className="font-mono text-xs">{dispatch.messageId}</TableCell>
                     <TableCell className="font-medium">{dispatch.campaign}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        {getChannelIcon(dispatch.channel)}
-                        {dispatch.channel}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          {getChannelIcon(dispatch.channel)}
+                          <span className="text-sm">{dispatch.channel}</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">{dispatch.channelProvider}</span>
                       </div>
                     </TableCell>
                     <TableCell>{dispatch.recipient}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{dispatch.templateUsed}</TableCell>
-                    <TableCell>{dispatch.sentAt}</TableCell>
-                    <TableCell>{getStatusBadge(dispatch.status)}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground max-w-32 truncate">{dispatch.templateUsed}</TableCell>
+                    <TableCell className="text-sm">{dispatch.sentAt}</TableCell>
                     <TableCell>
-                      {dispatch.opened ? (
-                        <Badge variant="default" className="bg-blue-500">Sim</Badge>
-                      ) : (
-                        <Badge variant="outline">Não</Badge>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {getStatusBadge(dispatch.status)}
+                        {dispatch.errorCode && (
+                          <Badge variant="destructive" className="text-xs">{dispatch.errorCode}</Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm font-medium">{dispatch.cost}</TableCell>
+                    <TableCell className="text-sm">
+                      <div className="flex flex-col">
+                        <span>{dispatch.region}</span>
+                        <span className="text-xs text-muted-foreground">{dispatch.country}</span>
+                      </div>
                     </TableCell>
                     <TableCell>
-                      {dispatch.responded ? (
-                        <Badge variant="default" className="bg-green-500">Sim</Badge>
-                      ) : (
-                        <Badge variant="outline">Não</Badge>
+                      {dispatch.sentiment && (
+                        <Badge 
+                          variant={
+                            dispatch.sentiment === "Muito Positivo" || dispatch.sentiment === "Positivo" 
+                              ? "default" 
+                              : dispatch.sentiment === "Negativo" 
+                                ? "destructive" 
+                                : "secondary"
+                          }
+                          className={
+                            dispatch.sentiment === "Muito Positivo" 
+                              ? "bg-green-600" 
+                              : dispatch.sentiment === "Positivo"
+                                ? "bg-green-500"
+                                : ""
+                          }
+                        >
+                          {dispatch.sentiment}
+                        </Badge>
                       )}
+                    </TableCell>
+                    <TableCell className="text-sm">{dispatch.responseTime || "-"}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-xs">{dispatch.retryCount}</Badge>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Button size="sm" variant="outline">
