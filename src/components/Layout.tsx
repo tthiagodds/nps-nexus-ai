@@ -1,9 +1,11 @@
 import { AppSidebar } from "@/components/AppSidebar";
-import { User, Bell } from "lucide-react";
+import { User, Bell, Settings, LogOut, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -73,11 +75,59 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               </PopoverContent>
             </Popover>
-            <Avatar>
-              <AvatarFallback>
-                <User className="h-4 w-4" />
-              </AvatarFallback>
-            </Avatar>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Avatar>
+                    <AvatarFallback>
+                      <User className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <UserCircle className="h-5 w-5" />
+                    Perfil do Usuário
+                  </DialogTitle>
+                  <DialogDescription>
+                    Gerencie sua conta e configurações pessoais
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                    <Avatar className="h-12 w-12">
+                      <AvatarFallback>
+                        <User className="h-6 w-6" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium">Admin User</p>
+                      <p className="text-sm text-muted-foreground">admin@sentai.com</p>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="space-y-2">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <UserCircle className="h-4 w-4" />
+                      Editar Perfil
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                      <Settings className="h-4 w-4" />
+                      Configurações da Conta
+                    </Button>
+                    <Separator />
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive">
+                      <LogOut className="h-4 w-4" />
+                      Sair da Conta
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </header>
         

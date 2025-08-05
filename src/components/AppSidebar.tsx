@@ -15,7 +15,11 @@ import {
   FileType,
   Star,
   Smartphone,
-  Zap
+  Zap,
+  Database,
+  Phone,
+  Workflow,
+  PieChart
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -25,21 +29,30 @@ const menuItems = [
     icon: Home,
     items: [
       { title: "Overview", url: "/", icon: Home },
-      { title: "Analytics", url: "/analytics", icon: TrendingUp },
     ]
   },
   {
-    title: "NPS",
-    icon: Target,
+    title: "Configurações Gerais",
+    icon: Settings,
     items: [
       { title: "Campanhas", url: "/campaigns", icon: Target },
-      { title: "Disparos", url: "/dispatches", icon: Zap },
-      { title: "Relatórios", url: "/reports", icon: FileText },
-      { title: "Opiniões", url: "/opinions", icon: MessageSquare },
+      { title: "Configuração de Canais", url: "/channel-config", icon: Send },
+      { title: "Configuração de Opiniões", url: "/opinion-settings", icon: MessageSquare },
+      { title: "Base de Dados", url: "/database", icon: Database },
     ]
   },
   {
-    title: "IA",
+    title: "Relatórios",
+    icon: PieChart,
+    items: [
+      { title: "Relatório Geral", url: "/reports", icon: FileText },
+      { title: "Categorização IA", url: "/reports/ai-categorization", icon: Bot },
+      { title: "Mensagens Automáticas", url: "/reports/automation", icon: Zap },
+      { title: "Relatório de Opiniões", url: "/reports/opinions", icon: MessageSquare },
+    ]
+  },
+  {
+    title: "Inteligência Artificial",
     icon: Brain,
     items: [
       { title: "Configurações IA", url: "/ai-settings", icon: Brain },
@@ -50,19 +63,10 @@ const menuItems = [
     title: "Comunicação",
     icon: Mail,
     items: [
-      { title: "Templates Email", url: "/email-templates", icon: FileType },
-      { title: "Envio de Emails", url: "/email-sending", icon: Mail },
-      { title: "SMS & Meta", url: "/messaging", icon: Smartphone },
+      { title: "Conexão WhatsApp", url: "/whatsapp-config", icon: Phone },
+      { title: "Automações", url: "/automations", icon: Workflow },
+      { title: "Disparos", url: "/dispatches", icon: Zap },
       { title: "HSM Templates", url: "/hsm-templates", icon: Send },
-    ]
-  },
-  {
-    title: "Admin",
-    icon: Settings,
-    items: [
-      { title: "Usuários", url: "/users", icon: Users },
-      { title: "Config. Opiniões", url: "/opinion-settings", icon: MessageSquare },
-      { title: "Configurações", url: "/settings", icon: Settings },
     ]
   }
 ];

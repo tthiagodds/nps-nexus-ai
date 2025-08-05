@@ -16,6 +16,12 @@ import Dispatches from "./pages/Dispatches";
 import OpinionSettings from "./pages/OpinionSettings";
 import AISettings from "./pages/AISettings";
 import HSMTemplates from "./pages/HSMTemplates";
+import ChannelConfig from "./pages/ChannelConfig";
+import DatabasePage from "./pages/Database";
+import WhatsAppConfig from "./pages/WhatsAppConfig";
+import Automations from "./pages/Automations";
+import AutomationReports from "./pages/reports/AutomationReports";
+import OpinionReports from "./pages/reports/OpinionReports";
 
 const queryClient = new QueryClient();
 
@@ -29,15 +35,33 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Index />} />
+          
+          {/* Configurações Gerais */}
           <Route path="/campaigns" element={<Campaigns />} />
-          <Route path="/dispatches" element={<Dispatches />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/opinions" element={<Opinions />} />
-          <Route path="/ai-categorization" element={<AICategorization />} />
-          <Route path="/ai-settings" element={<AISettings />} />
-          <Route path="/messaging" element={<Messaging />} />
-          <Route path="/hsm-templates" element={<HSMTemplates />} />
+          <Route path="/channel-config" element={<ChannelConfig />} />
           <Route path="/opinion-settings" element={<OpinionSettings />} />
+          <Route path="/database" element={<DatabasePage />} />
+          
+          {/* Relatórios */}
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/reports/ai-categorization" element={<AICategorization />} />
+          <Route path="/reports/automation" element={<AutomationReports />} />
+          <Route path="/reports/opinions" element={<OpinionReports />} />
+          
+          {/* Inteligência Artificial */}
+          <Route path="/ai-settings" element={<AISettings />} />
+          <Route path="/ai-categorization" element={<AICategorization />} />
+          
+          {/* Comunicação */}
+          <Route path="/whatsapp-config" element={<WhatsAppConfig />} />
+          <Route path="/automations" element={<Automations />} />
+          <Route path="/dispatches" element={<Dispatches />} />
+          <Route path="/hsm-templates" element={<HSMTemplates />} />
+          
+          {/* Legacy routes */}
+          <Route path="/opinions" element={<Opinions />} />
+          <Route path="/messaging" element={<Messaging />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

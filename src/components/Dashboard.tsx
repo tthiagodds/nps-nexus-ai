@@ -4,6 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { 
   Heart, 
   Send, 
@@ -16,7 +19,8 @@ import {
   MessageSquare,
   Star,
   CalendarIcon,
-  Filter
+  Filter,
+  Eye
 } from "lucide-react";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
@@ -29,11 +33,25 @@ export function Dashboard() {
     to: new Date(2025, 0, 22),
   });
 
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([
+    "NPS SMS", "NPS EMAIL", "NPS MISTO"
+  ]);
+
   const npsData = [
-    { nome: "NPS SMS", opinioes: 20, detratores: 5, neutros: 5, promotores: 10, nps: 54, nota: 10, cliente: "David", comentario: "Parabéns, eu gostei" },
-    { nome: "NPS EMAIL", opinioes: 50, detratores: 10, neutros: 10, promotores: 30, nps: 49, nota: 2, cliente: "Thiago", comentario: "Muito ruim esse site" },
-    { nome: "NPS MISTO", opinioes: 30, detratores: 5, neutros: 5, promotores: 20, nps: 57, nota: 5, cliente: "Thanos", comentario: "Mais ou menos ein" },
+    { nome: "NPS SMS", opinioes: 20, detratores: 5, neutros: 5, promotores: 10, nps: 54, nota: 10, cliente: "David", comentario: "Parabéns, eu gostei", data: "22/01/2025" },
+    { nome: "NPS EMAIL", opinioes: 50, detratores: 10, neutros: 10, promotores: 30, nps: 49, nota: 2, cliente: "Thiago", comentario: "Muito ruim esse site", data: "21/01/2025" },
+    { nome: "NPS MISTO", opinioes: 30, detratores: 5, neutros: 5, promotores: 20, nps: 57, nota: 5, cliente: "Thanos", comentario: "Mais ou menos ein", data: "20/01/2025" },
   ];
+
+  const handleCampaignToggle = (campaignName: string) => {
+    setSelectedCampaigns(prev => 
+      prev.includes(campaignName) 
+        ? prev.filter(name => name !== campaignName)
+        : [...prev, campaignName]
+    );
+  };
+
+  const filteredData = npsData.filter(campaign => selectedCampaigns.includes(campaign.nome));
 
   return (
     <div className="space-y-6">
@@ -44,10 +62,46 @@ export function Dashboard() {
           <p className="text-muted-foreground">Overview</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtros
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4 mr-2" />
+                Filtros ({selectedCampaigns.length})
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Filtro de Campanhas</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Selecione as campanhas que deseja visualizar no dashboard:
+                </p>
+                <div className="space-y-3">
+                  {npsData.map((campaign) => (
+                    <div key={campaign.nome} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={campaign.nome}
+                        checked={selectedCampaigns.includes(campaign.nome)}
+                        onCheckedChange={() => handleCampaignToggle(campaign.nome)}
+                      />
+                      <Label htmlFor={campaign.nome} className="flex-1 cursor-pointer">
+                        {campaign.nome}
+                      </Label>
+                      <Badge variant="outline">{campaign.opinioes} opiniões</Badge>
+                    </div>
+                  ))}
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSelectedCampaigns(npsData.map(c => c.nome))}
+                  className="w-full"
+                >
+                  Selecionar Todas
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -169,7 +223,7 @@ export function Dashboard() {
                 <span>NPS</span>
               </div>
 
-              {npsData.map((campaign, index) => (
+              {filteredData.map((campaign, index) => (
                 <div key={index} className="grid grid-cols-7 gap-2 text-sm py-2 border-b last:border-b-0">
                   <span className="font-medium">{campaign.nome}</span>
                   <span>{campaign.opinioes}</span>
@@ -189,26 +243,79 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="grid grid-cols-5 gap-2 text-sm font-medium text-muted-foreground border-b pb-2">
+              <div className="grid grid-cols-6 gap-2 text-sm font-medium text-muted-foreground border-b pb-2">
+                <span>Campanha</span>
+                <span>Data</span>
                 <span>Nota</span>
                 <span>Cliente</span>
                 <span>Comentário</span>
+                <span>Ações</span>
               </div>
 
-              {npsData.map((opinion, index) => (
-                <div key={index} className="grid grid-cols-5 gap-2 text-sm py-2 border-b last:border-b-0">
-                  <div className="flex items-center">
-                    <Badge variant={opinion.nota >= 9 ? "default" : opinion.nota >= 7 ? "secondary" : "destructive"}>
-                      {opinion.nota}
-                    </Badge>
+              {filteredData.map((opinion, index) => (
+                <Dialog key={index}>
+                  <div className="grid grid-cols-6 gap-2 text-sm py-2 border-b last:border-b-0 hover:bg-muted/50 cursor-pointer">
+                    <span className="font-medium text-xs">{opinion.nome}</span>
+                    <span className="text-xs text-muted-foreground">{opinion.data}</span>
+                    <div className="flex items-center">
+                      <Badge variant={opinion.nota >= 9 ? "default" : opinion.nota >= 7 ? "secondary" : "destructive"}>
+                        {opinion.nota}
+                      </Badge>
+                    </div>
+                    <span className="font-medium">{opinion.cliente}</span>
+                    <span className="text-muted-foreground truncate">{opinion.comentario}</span>
+                    <div className="flex gap-1">
+                      <DialogTrigger asChild>
+                        <Button size="sm" variant="outline">
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      </DialogTrigger>
+                      <Button size="sm" variant="outline">
+                        <MessageSquare className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
-                  <span className="font-medium">{opinion.cliente}</span>
-                  <span className="text-muted-foreground col-span-2">{opinion.comentario}</span>
-                  <Button size="sm" variant="outline">
-                    <MessageSquare className="h-3 w-3 mr-1" />
-                    Responder
-                  </Button>
-                </div>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Detalhes da Opinião</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium">Campanha</Label>
+                          <p className="text-sm">{opinion.nome}</p>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium">Data</Label>
+                          <p className="text-sm">{opinion.data}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium">Cliente</Label>
+                          <p className="text-sm">{opinion.cliente}</p>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium">Nota</Label>
+                          <Badge variant={opinion.nota >= 9 ? "default" : opinion.nota >= 7 ? "secondary" : "destructive"}>
+                            {opinion.nota}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Comentário Completo</Label>
+                        <p className="text-sm border rounded p-2 bg-muted">{opinion.comentario}</p>
+                      </div>
+                      <div className="flex gap-2 pt-4">
+                        <Button>
+                          <MessageSquare className="h-4 w-4 mr-2" />
+                          Responder Cliente
+                        </Button>
+                        <Button variant="outline">Marcar como Resolvido</Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               ))}
             </div>
           </CardContent>
