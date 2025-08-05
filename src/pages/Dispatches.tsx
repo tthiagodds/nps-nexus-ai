@@ -137,10 +137,17 @@ export default function Dispatches() {
                       <Upload className="h-6 w-6 mb-2" />
                       Upload de Planilha
                     </Button>
-                    <Button variant="outline" className="h-20 flex flex-col">
-                      <Users className="h-6 w-6 mb-2" />
-                      Inclusão Manual
-                    </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col"
+                  onClick={() => {
+                    // TODO: Implementar funcionalidade de inclusão manual
+                    alert("Funcionalidade de inclusão manual em desenvolvimento");
+                  }}
+                >
+                  <Users className="h-6 w-6 mb-2" />
+                  Inclusão Manual
+                </Button>
                   </div>
                 </div>
 

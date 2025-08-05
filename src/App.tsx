@@ -23,6 +23,8 @@ import Automations from "./pages/Automations";
 import AutomationReports from "./pages/reports/AutomationReports";
 import OpinionReports from "./pages/reports/OpinionReports";
 import DispatchReports from "./pages/reports/DispatchReports";
+import UserManagement from "./pages/UserManagement";
+import SurveyResponse from "./pages/SurveyResponse";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +60,10 @@ const App = () => (
           <Route path="/automations" element={<Automations />} />
           <Route path="/dispatches" element={<Dispatches />} />
           <Route path="/hsm-templates" element={<HSMTemplates />} />
+          <Route path="/user-management" element={<UserManagement />} />
+          
+          {/* Survey Response Page */}
+          <Route path="/survey/:campaignId" element={<SurveyResponse />} />
           
           {/* Legacy routes */}
           <Route path="/opinions" element={<Opinions />} />

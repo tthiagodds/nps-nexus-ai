@@ -49,93 +49,10 @@ export default function HSMTemplates() {
           </div>
         </div>
 
-        <Tabs defaultValue="templates" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="templates">Templates HSM</TabsTrigger>
-            <TabsTrigger value="accounts">Tipos de Conta</TabsTrigger>
-          </TabsList>
-
-          {/* Tipos de Conta WhatsApp */}
-          <TabsContent value="accounts" className="space-y-6">
-            <div className="grid gap-6">
-              {/* WhatsApp Business API (Enterprise) */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    WhatsApp Business API (Enterprise)
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    HSM precisa ser aprovado pela Meta. Suporta imagens, botões, cabeçalhos e mídia.
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-blue-800">Conta Enterprise Conectada</span>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Status de Aprovação</span>
-                      <Badge variant="default" className="bg-green-500">Aprovado</Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Templates Ativos</span>
-                      <span className="font-medium">12/15</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Limite Mensal</span>
-                      <span className="font-medium">50,000 mensagens</span>
-                    </div>
-                  </div>
-                  
-                  <Button variant="outline" className="w-full">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Configurar Preview HSM
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* WhatsApp Business (Offline) */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    WhatsApp Business (Offline)
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    HSM pode ser criado sem aprovação da Meta. Integração via WAHA.
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                    <div className="h-2 w-2 bg-orange-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-orange-800">Configuração Pendente</span>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Integração WAHA</span>
-                      <Badge variant="secondary">Não Configurado</Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Templates Disponíveis</span>
-                      <span className="font-medium">Ilimitado</span>
-                    </div>
-                  </div>
-                  
-                  <Button className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Configurar WAHA
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+        <div className="space-y-6">
 
           {/* Templates HSM */}
-          <TabsContent value="templates" className="space-y-6">
+          <div className="space-y-6">
             <div className="flex justify-between items-center">
               <div className="relative w-64">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -158,7 +75,7 @@ export default function HSMTemplates() {
                     <DialogTitle>Novo Template HSM</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="template-name">Nome do Template</Label>
                         <Input id="template-name" placeholder="Ex: confirmacao_pedido" />
@@ -177,6 +94,19 @@ export default function HSMTemplates() {
                           </SelectContent>
                         </Select>
                       </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="whatsapp-account">Conta WhatsApp</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a conta" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="enterprise">WhatsApp Business API (Enterprise)</SelectItem>
+                            <SelectItem value="business">WhatsApp Business (WAHA)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     
                     <div className="space-y-2">
@@ -188,10 +118,22 @@ export default function HSMTemplates() {
                       />
                     </div>
                     
-                    <div className="space-y-2">
-                      <Label>Variáveis</Label>
-                      <div className="text-sm text-muted-foreground">
-                        Use variáveis dinâmicas como: nome, pedido, etc.
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Variáveis</Label>
+                        <div className="text-sm text-muted-foreground">
+                          Use variáveis dinâmicas como: {`{{nome}}, {{pedido}}`}, etc.
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label>Preview do HSM</Label>
+                        <div className="p-3 bg-muted rounded-lg">
+                          <div className="text-sm text-muted-foreground mb-2">Preview:</div>
+                          <div className="bg-background p-3 rounded border text-sm">
+                            Olá [nome], seu pedido [pedido] foi confirmado...
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -239,9 +181,8 @@ export default function HSMTemplates() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-
-        </Tabs>
+          </div>
+        </div>
       </div>
     </Layout>
   );
