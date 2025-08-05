@@ -171,18 +171,23 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
             />
             
             <div>
-              <Label htmlFor="targetAudience">Público-alvo</Label>
+              <Label htmlFor="targetAudience">Público-alvo (Visualização)</Label>
               <Select value={formData.targetAudience} onValueChange={(value) => setFormData({...formData, targetAudience: value})}>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Selecione uma visualização da base de dados" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos os clientes</SelectItem>
-                  <SelectItem value="recent">Clientes recentes (últimos 30 dias)</SelectItem>
-                  <SelectItem value="repeat">Clientes recorrentes</SelectItem>
-                  <SelectItem value="first-time">Primeira compra</SelectItem>
+                  <SelectItem value="all">Todos os clientes (sem filtro)</SelectItem>
+                  <SelectItem value="view_1">Clientes Ativos</SelectItem>
+                  <SelectItem value="view_2">Pedidos Entregues</SelectItem>
+                  <SelectItem value="view_3">Tickets Resolvidos</SelectItem>
+                  <SelectItem value="view_4">Clientes Premium</SelectItem>
+                  <SelectItem value="view_5">Primeira Compra</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                As visualizações são configuradas no módulo "Base de Dados" com filtros específicos
+              </p>
             </div>
           </div>
         );

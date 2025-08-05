@@ -1,13 +1,19 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Database, Plus, Folder, Filter, Download, Edit, Trash2 } from "lucide-react";
 import Layout from "@/components/Layout";
+import { AdvancedFilterBuilder } from "@/components/AdvancedFilterBuilder";
 
 export default function DatabasePage() {
+  const [filterGroups, setFilterGroups] = useState([]);
+  const [selectedEndpoint, setSelectedEndpoint] = useState('');
+
   const endpoints = [
     { id: 1, name: "CRM Principal", url: "https://api.empresa.com/customers", status: "Conectado", records: 12450 },
     { id: 2, name: "E-commerce", url: "https://api.loja.com/orders", status: "Conectado", records: 8900 },
@@ -19,6 +25,40 @@ export default function DatabasePage() {
     { id: 2, name: "Pedidos Entregues", endpoint: "E-commerce", filters: "status = entregue", records: 7200 },
     { id: 3, name: "Tickets Resolvidos", endpoint: "SAC Telefônico", filters: "status = resolvido", records: 450 },
   ];
+
+  // Mock available fields based on selected endpoint
+  const getAvailableFields = (endpointName: string) => {
+    const fieldsByEndpoint = {
+      "CRM Principal": [
+        { name: 'nome_cliente', label: 'Nome do Cliente', type: 'text' as const },
+        { name: 'email', label: 'Email', type: 'text' as const },
+        { name: 'status', label: 'Status', type: 'text' as const },
+        { name: 'data_cadastro', label: 'Data de Cadastro', type: 'date' as const },
+        { name: 'valor_total_compras', label: 'Valor Total de Compras', type: 'currency' as const },
+        { name: 'ativo', label: 'Cliente Ativo', type: 'boolean' as const }
+      ],
+      "E-commerce": [
+        { name: 'numero_pedido', label: 'Número do Pedido', type: 'text' as const },
+        { name: 'status', label: 'Status do Pedido', type: 'text' as const },
+        { name: 'valor_pedido', label: 'Valor do Pedido', type: 'currency' as const },
+        { name: 'data_pedido', label: 'Data do Pedido', type: 'date' as const },
+        { name: 'data_entrega', label: 'Data de Entrega', type: 'date' as const },
+        { name: 'quantidade_itens', label: 'Quantidade de Itens', type: 'number' as const }
+      ],
+      "SAC Telefônico": [
+        { name: 'numero_ticket', label: 'Número do Ticket', type: 'text' as const },
+        { name: 'status', label: 'Status', type: 'text' as const },
+        { name: 'prioridade', label: 'Prioridade', type: 'text' as const },
+        { name: 'data_abertura', label: 'Data de Abertura', type: 'date' as const },
+        { name: 'data_resolucao', label: 'Data de Resolução', type: 'date' as const },
+        { name: 'tempo_resolucao', label: 'Tempo de Resolução (horas)', type: 'number' as const }
+      ]
+    };
+    
+    return fieldsByEndpoint[endpointName] || [];
+  };
+
+  const availableFields = selectedEndpoint ? getAvailableFields(selectedEndpoint) : [];
 
   return (
     <Layout>
@@ -112,28 +152,43 @@ export default function DatabasePage() {
                     Nova Visualização
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Criar Nova Visualização</DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="view-name">Nome da Visualização</Label>
-                      <Input id="view-name" placeholder="Ex: Clientes Premium" />
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="view-name">Nome da Visualização</Label>
+                        <Input id="view-name" placeholder="Ex: Clientes Premium" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="view-endpoint">Endpoint Base</Label>
+                        <Select value={selectedEndpoint} onValueChange={setSelectedEndpoint}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione um endpoint" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CRM Principal">CRM Principal</SelectItem>
+                            <SelectItem value="E-commerce">E-commerce</SelectItem>
+                            <SelectItem value="SAC Telefônico">SAC Telefônico</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="view-endpoint">Endpoint Base</Label>
-                      <select className="w-full p-2 border rounded-md">
-                        <option>CRM Principal</option>
-                        <option>E-commerce</option>
-                        <option>SAC Telefônico</option>
-                      </select>
+
+                    {selectedEndpoint && (
+                      <AdvancedFilterBuilder
+                        value={filterGroups}
+                        onChange={setFilterGroups}
+                        availableFields={availableFields}
+                      />
+                    )}
+
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline">Cancelar</Button>
+                      <Button disabled={!selectedEndpoint}>Criar Visualização</Button>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="view-filters">Filtros</Label>
-                      <Input id="view-filters" placeholder="Ex: status = premium AND valor > 1000" />
-                    </div>
-                    <Button className="w-full">Criar Visualização</Button>
                   </div>
                 </DialogContent>
               </Dialog>
