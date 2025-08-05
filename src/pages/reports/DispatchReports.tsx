@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Download, Filter, Search, Eye, Mail, MessageSquare, Smartphone } from "lucide-react";
+import { DateRangePicker } from "@/components/DateRangePicker";
 import Layout from "@/components/Layout";
 import { MetricCard } from "@/components/MetricCard";
 
@@ -230,10 +231,7 @@ export default function DispatchReports() {
             <p className="text-muted-foreground">Acompanhe todos os disparos de campanhas e suas métricas</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">
-              <Calendar className="h-4 w-4 mr-2" />
-              Período
-            </Button>
+            <DateRangePicker />
             <Button variant="outline">
               <Download className="h-4 w-4 mr-2" />
               Exportar
