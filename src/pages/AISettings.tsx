@@ -125,101 +125,185 @@ export default function AISettings() {
           </Card>
         </div>
 
-        {/* Auto Response Configuration */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5" />
-              Configuração de Respostas Automáticas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="response-trigger">Disparar para</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="detractors">Apenas Detratores (0-6)</SelectItem>
-                    <SelectItem value="complaints">Reclamações</SelectItem>
-                    <SelectItem value="both">Detratores e Reclamações</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="response-delay">Delay de Resposta (minutos)</Label>
-                <Input id="response-delay" type="number" placeholder="Ex: 5" />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="response-template">Template Base da Resposta</Label>
-              <Textarea 
-                id="response-template"
-                placeholder="Olá [NOME], agradecemos seu feedback. Identificamos que você mencionou [CATEGORIA]..."
-                className="h-20"
-              />
-            </div>
-            
-            <Button>
-              Salvar Configurações de Resposta
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* AI Prompts Configuration */}
+        {/* AI Configuration */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
-              Configuração de Prompts de IA
+              Configuração de IA
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="categorization-prompt">Prompt de Categorização</Label>
-              <Textarea 
-                id="categorization-prompt" 
-                placeholder="Prompt para categorização automática..."
-                rows={6}
-                defaultValue="Analise a seguinte resposta do cliente: {resposta_cliente}. 
-A nota atribuída foi: {nota}.
-A campanha é: {campanha}.
-Com base no contexto e nas categorias disponíveis: {categorias_existentes}, 
-classifique esta resposta na categoria mais apropriada e explique o motivo."
-              />
+          <CardContent className="space-y-6">
+            {/* Categorization Settings */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <h4 className="font-semibold">Categorização Automática</h4>
+                  <p className="text-sm text-muted-foreground">Categoriza automaticamente todas as respostas</p>
+                </div>
+                <Switch checked={aiEnabled} onCheckedChange={setAiEnabled} />
+              </div>
+
+              {aiEnabled && (
+                <div className="space-y-4 ml-4 border-l-2 border-primary pl-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="categorization-prompt">Prompt de Categorização</Label>
+                    <Textarea 
+                      id="categorization-prompt" 
+                      placeholder="Configure como a IA deve categorizar as respostas..."
+                      rows={4}
+                      defaultValue="Analise a resposta: '{resposta_cliente}' com nota {nota} da campanha '{campanha}'. Classifique nas categorias: {categorias_existentes}. Retorne: categoria, subcategoria, sentimento e justificativa."
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="confidence-threshold">Limite de Confiança (%)</Label>
+                      <Input id="confidence-threshold" type="number" placeholder="85" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="review-threshold">Revisar Manualmente Abaixo de (%)</Label>
+                      <Input id="review-threshold" type="number" placeholder="70" />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="response-prompt">Prompt de Resposta Automática</Label>
-              <Textarea 
-                id="response-prompt" 
-                placeholder="Prompt para geração de respostas automáticas..."
-                rows={6}
-                defaultValue="Com base na resposta do cliente: {resposta_cliente}
-Nota: {nota}
-Campanha: {campanha}
-Categoria identificada: {categoria}
-Gere uma resposta personalizada e empática que aborde os pontos específicos mencionados pelo cliente."
-              />
+
+            {/* Auto Response Settings */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <h4 className="font-semibold">Respostas Automáticas</h4>
+                  <p className="text-sm text-muted-foreground">Gera e envia respostas automáticas personalizadas</p>
+                </div>
+                <Switch checked={autoResponseEnabled} onCheckedChange={setAutoResponseEnabled} />
+              </div>
+
+              {autoResponseEnabled && (
+                <div className="space-y-4 ml-4 border-l-2 border-secondary pl-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="response-trigger">Disparar Para</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="detractors">Apenas Detratores (0-6)</SelectItem>
+                          <SelectItem value="complaints">Reclamações Identificadas</SelectItem>
+                          <SelectItem value="negative">Sentimento Negativo</SelectItem>
+                          <SelectItem value="all">Todas as Respostas</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="response-delay">Delay (minutos)</Label>
+                      <Input id="response-delay" type="number" placeholder="5" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="response-channel">Canal de Resposta</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Mesmo canal" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="same">Mesmo Canal da Pesquisa</SelectItem>
+                          <SelectItem value="email">Sempre Email</SelectItem>
+                          <SelectItem value="whatsapp">Sempre WhatsApp</SelectItem>
+                          <SelectItem value="sms">Sempre SMS</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="response-prompt">Prompt para Geração de Resposta</Label>
+                    <Textarea 
+                      id="response-prompt" 
+                      placeholder="Configure como a IA deve gerar as respostas..."
+                      rows={4}
+                      defaultValue="Baseado na resposta '{resposta_cliente}' (nota: {nota}, categoria: {categoria}) da campanha '{campanha}', gere uma resposta empática e personalizada que: 1) Agradeça o feedback, 2) Aborde os pontos específicos mencionados, 3) Ofereça uma solução ou próximos passos quando apropriado."
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="tone">Tom da Resposta</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Profissional" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="professional">Profissional</SelectItem>
+                          <SelectItem value="friendly">Amigável</SelectItem>
+                          <SelectItem value="formal">Formal</SelectItem>
+                          <SelectItem value="casual">Casual</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="max-length">Tamanho Máximo (caracteres)</Label>
+                      <Input id="max-length" type="number" placeholder="500" />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="p-4 bg-muted rounded-lg">
-              <h4 className="font-medium mb-2">Variáveis Disponíveis:</h4>
-              <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-                <div>• {'{resposta_cliente}'} - Resposta do cliente</div>
-                <div>• {'{nota}'} - Nota atribuída</div>
-                <div>• {'{campanha}'} - Nome da campanha</div>
-                <div>• {'{categoria}'} - Categoria identificada</div>
-                <div>• {'{categorias_existentes}'} - Lista de categorias</div>
-                <div>• {'{nome_cliente}'} - Nome do cliente</div>
+
+            {/* Advanced Settings */}
+            <div className="space-y-4">
+              <h4 className="font-semibold border-b pb-2">Configurações Avançadas</h4>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="model-temperature">Criatividade da IA (0-1)</Label>
+                  <Input id="model-temperature" type="number" step="0.1" placeholder="0.7" />
+                  <p className="text-xs text-muted-foreground">0 = mais conservador, 1 = mais criativo</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="batch-processing">Processamento em Lote</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Ativado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="enabled">Ativado</SelectItem>
+                      <SelectItem value="disabled">Desativado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="p-4 bg-muted rounded-lg">
+                <h5 className="font-medium mb-2">Variáveis Disponíveis:</h5>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 text-sm text-muted-foreground">
+                  <div>• {'{resposta_cliente}'}</div>
+                  <div>• {'{nota}'}</div>
+                  <div>• {'{campanha}'}</div>
+                  <div>• {'{categoria}'}</div>
+                  <div>• {'{categorias_existentes}'}</div>
+                  <div>• {'{nome_cliente}'}</div>
+                  <div>• {'{canal_origem}'}</div>
+                  <div>• {'{data_resposta}'}</div>
+                  <div>• {'{empresa}'}</div>
+                </div>
               </div>
             </div>
-            <Button>
-              <Settings className="h-4 w-4 mr-2" />
-              Salvar Prompts
-            </Button>
+
+            <div className="flex gap-2">
+              <Button>
+                <Settings className="h-4 w-4 mr-2" />
+                Salvar Configurações
+              </Button>
+              <Button variant="outline">
+                Testar Configuração
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
