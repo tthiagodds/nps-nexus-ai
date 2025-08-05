@@ -147,25 +147,25 @@ export function Dashboard() {
           title="Avaliações"
           value="100"
           icon={Heart}
-          colorClass="bg-slate-600"
+          variant="secondary"
         />
         <MetricCard
           title="Disparos"
           value="131"
           icon={Send}
-          colorClass="bg-slate-600"
+          variant="secondary"
         />
         <MetricCard
           title="Tx. de Resposta"
           value="77%"
           icon={Clock}
-          colorClass="bg-slate-600"
+          variant="secondary"
         />
         <MetricCard
           title="Tx. de Comentários"
           value="68%"
           icon={MessageSquare}
-          colorClass="bg-slate-600"
+          variant="secondary"
         />
       </div>
 
@@ -176,27 +176,27 @@ export function Dashboard() {
           value="20"
           percentage="12%"
           icon={Frown}
-          colorClass="bg-destructive"
+          variant="destructive"
         />
         <MetricCard
           title="Neutros"
           value="36"
           percentage="21%"
           icon={Meh}
-          colorClass="bg-warning"
+          variant="warning"
         />
         <MetricCard
           title="Promotores"
           value="73"
           percentage="51%"
           icon={Smile}
-          colorClass="bg-success"
+          variant="success"
         />
         <MetricCard
           title="NPS"
           value="52"
           icon={BarChart3}
-          colorClass="bg-slate-600"
+          variant="secondary"
         />
       </div>
 

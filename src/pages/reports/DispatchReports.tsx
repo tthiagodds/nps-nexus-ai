@@ -199,7 +199,7 @@ export default function DispatchReports() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "Entregue":
-        return <Badge variant="default" className="bg-green-500">Entregue</Badge>;
+        return <Badge variant="default" className="bg-success">Entregue</Badge>;
       case "Pendente":
         return <Badge variant="secondary">Pendente</Badge>;
       case "Falhou":
@@ -371,9 +371,9 @@ export default function DispatchReports() {
                           }
                           className={
                             dispatch.sentiment === "Muito Positivo" 
-                              ? "bg-green-600" 
+                              ? "bg-success" 
                               : dispatch.sentiment === "Positivo"
-                                ? "bg-green-500"
+                                ? "bg-success"
                                 : ""
                           }
                         >

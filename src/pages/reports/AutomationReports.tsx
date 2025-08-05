@@ -63,25 +63,25 @@ export default function AutomationReports() {
             title="Automações Disparadas"
             value="1.670"
             icon={Zap}
-            colorClass="bg-primary"
+            variant="default"
           />
           <MetricCard
             title="Taxa de Entrega"
             value="98.8%"
             icon={TrendingUp}
-            colorClass="bg-success"
+            variant="success"
           />
           <MetricCard
             title="Taxa de Leitura"
             value="82.3%"
             icon={Users}
-            colorClass="bg-slate-600"
+            variant="secondary"
           />
           <MetricCard
             title="Taxa de Resposta"
             value="42.6%"
             icon={Star}
-            colorClass="bg-warning"
+            variant="warning"
           />
         </div>
 

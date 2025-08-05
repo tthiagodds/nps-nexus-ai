@@ -6,7 +6,7 @@ interface MetricCardProps {
   value: string | number;
   subtitle?: string;
   icon: LucideIcon;
-  colorClass?: string;
+  variant?: 'default' | 'success' | 'warning' | 'destructive' | 'secondary';
   percentage?: string;
 }
 
@@ -15,14 +15,22 @@ export function MetricCard({
   value, 
   subtitle, 
   icon: Icon, 
-  colorClass = "bg-primary",
+  variant = 'default',
   percentage 
 }: MetricCardProps) {
+  const variantStyles = {
+    default: 'bg-primary',
+    success: 'bg-success',
+    warning: 'bg-warning', 
+    destructive: 'bg-destructive',
+    secondary: 'bg-secondary'
+  };
+
   return (
     <Card className="h-full">
       <CardContent className="p-6">
         <div className="flex items-center gap-4">
-          <div className={`w-12 h-12 ${colorClass} rounded-lg flex items-center justify-center`}>
+          <div className={`w-12 h-12 ${variantStyles[variant]} rounded-lg flex items-center justify-center`}>
             <Icon className="h-6 w-6 text-white" />
           </div>
           <div className="flex-1">

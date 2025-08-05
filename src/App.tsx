@@ -9,9 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Campaigns from "./pages/Campaigns";
 import Reports from "./pages/Reports";
-import Opinions from "./pages/Opinions";
 import AICategorization from "./pages/AICategorization";
-import Messaging from "./pages/Messaging";
 import Dispatches from "./pages/Dispatches";
 import OpinionSettings from "./pages/OpinionSettings";
 import AISettings from "./pages/AISettings";
@@ -50,10 +48,9 @@ const App = () => (
           
           {/* Relatórios */}
           <Route path="/reports" element={<Reports />} />
-          <Route path="/reports/ai-categorization" element={<AICategorization />} />
-            <Route path="/reports/automation" element={<AutomationReports />} />
-            <Route path="/reports/opinion" element={<OpinionReports />} />
-            <Route path="/reports/dispatch" element={<DispatchReports />} />
+          <Route path="/reports/automation" element={<AutomationReports />} />
+          <Route path="/reports/opinion" element={<OpinionReports />} />
+          <Route path="/reports/dispatch" element={<DispatchReports />} />
           
           {/* Inteligência Artificial */}
           <Route path="/ai-settings" element={<AISettings />} />
@@ -69,10 +66,6 @@ const App = () => (
           
           {/* Survey Response Page */}
           <Route path="/survey/:campaignId" element={<SurveyResponse />} />
-          
-          {/* Legacy routes */}
-          <Route path="/opinions" element={<Opinions />} />
-          <Route path="/messaging" element={<Messaging />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

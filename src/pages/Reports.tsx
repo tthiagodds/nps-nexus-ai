@@ -44,25 +44,25 @@ export default function Reports() {
             title="NPS Médio"
             value="53.3"
             icon={BarChart3}
-            colorClass="bg-primary"
+            variant="default"
           />
           <MetricCard
             title="Total Respostas"
             value="708"
             icon={Users}
-            colorClass="bg-slate-600"
+            variant="secondary"
           />
           <MetricCard
             title="Taxa Resposta"
             value="68%"
             icon={TrendingUp}
-            colorClass="bg-success"
+            variant="success"
           />
           <MetricCard
             title="Satisfação Média"
             value="8.2"
             icon={Star}
-            colorClass="bg-warning"
+            variant="warning"
           />
         </div>
 

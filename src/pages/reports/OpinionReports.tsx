@@ -314,7 +314,7 @@ export default function OpinionReports() {
                           }
                           className={
                             opinion.sentiment === "Muito Positivo" 
-                              ? "bg-green-600" 
+                              ? "bg-success" 
                               : ""
                           }
                         >
@@ -398,28 +398,28 @@ export default function OpinionReports() {
           <CardContent>
             <div className="grid grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div className="w-16 h-16 bg-success rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-2xl font-bold text-white">15%</span>
                 </div>
                 <p className="font-medium">Muito Positivo</p>
                 <p className="text-sm text-muted-foreground">215 opiniões</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div className="w-16 h-16 bg-success rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-2xl font-bold text-white">53%</span>
                 </div>
                 <p className="font-medium">Positivo</p>
                 <p className="text-sm text-muted-foreground">762 opiniões</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div className="w-16 h-16 bg-warning rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-2xl font-bold text-white">22%</span>
                 </div>
                 <p className="font-medium">Neutro</p>
                 <p className="text-sm text-muted-foreground">315 opiniões</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div className="w-16 h-16 bg-destructive rounded-full flex items-center justify-center mx-auto mb-2">
                   <span className="text-2xl font-bold text-white">10%</span>
                 </div>
                 <p className="font-medium">Negativo</p>

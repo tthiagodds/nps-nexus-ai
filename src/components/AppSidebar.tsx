@@ -48,7 +48,6 @@ const menuItems = [
     icon: PieChart,
     items: [
       { title: "Relatório Geral", url: "/reports", icon: FileText },
-      { title: "Categorização IA", url: "/reports/ai-categorization", icon: Bot },
       { title: "Mensagens Automáticas", url: "/reports/automation", icon: Zap },
       { title: "Relatório de Opiniões", url: "/reports/opinion", icon: MessageSquare },
       { title: "Relatório de Disparos", url: "/reports/dispatch", icon: Send },
