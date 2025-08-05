@@ -38,6 +38,17 @@ export default function OpinionReports() {
             <p className="text-muted-foreground">Análise detalhada das opiniões e sentimentos</p>
           </div>
           <div className="flex gap-2">
+            <Select>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Selecionar Campanha" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as Campanhas</SelectItem>
+                <SelectItem value="satisfaction-q1">Satisfação Q1 2025</SelectItem>
+                <SelectItem value="post-delivery">Pós-Entrega Dezembro</SelectItem>
+                <SelectItem value="support-survey">Pesquisa de Suporte</SelectItem>
+              </SelectContent>
+            </Select>
             <Button variant="outline">
               <Filter className="h-4 w-4 mr-2" />
               Filtros

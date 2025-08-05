@@ -17,10 +17,11 @@ export default function ChannelConfig() {
         </div>
 
         <Tabs defaultValue="email" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="email">Email</TabsTrigger>
             <TabsTrigger value="sms">SMS</TabsTrigger>
             <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
+            <TabsTrigger value="whatsapp-enterprise">WhatsApp Enterprise</TabsTrigger>
             <TabsTrigger value="ai">IA Automática</TabsTrigger>
           </TabsList>
 
@@ -101,7 +102,32 @@ export default function ChannelConfig() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Phone className="h-5 w-5" />
-                  Configuração do WhatsApp
+                  WhatsApp Business
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp-number">Número do WhatsApp Business</Label>
+                  <Input id="whatsapp-number" placeholder="+55 11 99999-9999" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp-api-key">Chave API</Label>
+                  <Input id="whatsapp-api-key" placeholder="Chave da API do WhatsApp Business" />
+                </div>
+                <Button>
+                  <Save className="h-4 w-4 mr-2" />
+                  Salvar Configurações
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="whatsapp-enterprise" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Phone className="h-5 w-5" />
+                  WhatsApp Enterprise (Meta API)
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -118,6 +144,14 @@ export default function ChannelConfig() {
                 <div className="space-y-2">
                   <Label htmlFor="whatsapp-token">Access Token</Label>
                   <Input id="whatsapp-token" placeholder="••••••••••••••••" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="app-id">App ID</Label>
+                  <Input id="app-id" placeholder="ID da aplicação Meta" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="app-secret">App Secret</Label>
+                  <Input id="app-secret" type="password" placeholder="••••••••••••••••" />
                 </div>
                 <Button>
                   <Save className="h-4 w-4 mr-2" />

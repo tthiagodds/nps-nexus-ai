@@ -22,6 +22,7 @@ import WhatsAppConfig from "./pages/WhatsAppConfig";
 import Automations from "./pages/Automations";
 import AutomationReports from "./pages/reports/AutomationReports";
 import OpinionReports from "./pages/reports/OpinionReports";
+import DispatchReports from "./pages/reports/DispatchReports";
 
 const queryClient = new QueryClient();
 

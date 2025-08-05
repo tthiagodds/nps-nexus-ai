@@ -6,10 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Plus, Search, Edit, Trash2, Play, Pause, BarChart3 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { CampaignForm } from "@/components/CampaignForm";
+import { CampaignImportModal } from "@/components/CampaignImportModal";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function Campaigns() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCampaignForm, setShowCampaignForm] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
 
@@ -70,10 +74,16 @@ export default function Campaigns() {
             <h1 className="text-3xl font-bold text-foreground">Campanhas NPS</h1>
             <p className="text-muted-foreground">Gerencie suas campanhas de pesquisa de satisfação</p>
           </div>
-          <Button onClick={handleNewCampaign}>
-            <Plus className="h-4 w-4 mr-2" />
-            Nova Campanha
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowImportModal(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Importar Campanha
+            </Button>
+            <Button onClick={handleNewCampaign}>
+              <Plus className="h-4 w-4 mr-2" />
+              Nova Campanha
+            </Button>
+          </div>
         </div>
 
         <Card>
@@ -130,7 +140,14 @@ export default function Campaigns() {
                       <Button size="sm" variant="outline">
                         {campaign.status === "Ativa" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedCampaign(campaign);
+                          setShowDeleteModal(true);
+                        }}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -147,6 +164,24 @@ export default function Campaigns() {
         onOpenChange={setShowCampaignForm}
         campaign={selectedCampaign}
         mode={formMode}
+      />
+
+      <CampaignImportModal
+        open={showImportModal}
+        onOpenChange={setShowImportModal}
+      />
+
+      <ConfirmModal
+        open={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
+        title="Excluir Campanha"
+        description={`Tem certeza que deseja excluir a campanha "${selectedCampaign?.name}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        variant="destructive"
+        onConfirm={() => {
+          // Handle delete campaign
+          console.log("Deletar campanha:", selectedCampaign);
+        }}
       />
     </Layout>
   );
