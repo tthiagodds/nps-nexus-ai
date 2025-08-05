@@ -39,6 +39,7 @@ const menuItems = [
       { title: "Configuração de Canais", url: "/channel-config", icon: Send },
       { title: "Configuração de Opiniões", url: "/opinion-settings", icon: MessageSquare },
       { title: "Base de Dados", url: "/database", icon: Database },
+      { title: "Blacklist", url: "/blacklist", icon: Users },
     ]
   },
   {
@@ -63,7 +64,6 @@ const menuItems = [
     title: "Comunicação",
     icon: Mail,
     items: [
-      { title: "Conexão WhatsApp", url: "/whatsapp-config", icon: Phone },
       { title: "Automações", url: "/automations", icon: Workflow },
       { title: "Disparos", url: "/dispatches", icon: Zap },
       { title: "HSM Templates", url: "/hsm-templates", icon: Send },

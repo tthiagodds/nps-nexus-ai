@@ -170,6 +170,59 @@ export default function AISettings() {
           </CardContent>
         </Card>
 
+        {/* AI Prompts Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              Configuração de Prompts de IA
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="categorization-prompt">Prompt de Categorização</Label>
+              <Textarea 
+                id="categorization-prompt" 
+                placeholder="Prompt para categorização automática..."
+                rows={6}
+                defaultValue="Analise a seguinte resposta do cliente: {resposta_cliente}. 
+A nota atribuída foi: {nota}.
+A campanha é: {campanha}.
+Com base no contexto e nas categorias disponíveis: {categorias_existentes}, 
+classifique esta resposta na categoria mais apropriada e explique o motivo."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="response-prompt">Prompt de Resposta Automática</Label>
+              <Textarea 
+                id="response-prompt" 
+                placeholder="Prompt para geração de respostas automáticas..."
+                rows={6}
+                defaultValue="Com base na resposta do cliente: {resposta_cliente}
+Nota: {nota}
+Campanha: {campanha}
+Categoria identificada: {categoria}
+Gere uma resposta personalizada e empática que aborde os pontos específicos mencionados pelo cliente."
+              />
+            </div>
+            <div className="p-4 bg-muted rounded-lg">
+              <h4 className="font-medium mb-2">Variáveis Disponíveis:</h4>
+              <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                <div>• {'{resposta_cliente}'} - Resposta do cliente</div>
+                <div>• {'{nota}'} - Nota atribuída</div>
+                <div>• {'{campanha}'} - Nome da campanha</div>
+                <div>• {'{categoria}'} - Categoria identificada</div>
+                <div>• {'{categorias_existentes}'} - Lista de categorias</div>
+                <div>• {'{nome_cliente}'} - Nome do cliente</div>
+              </div>
+            </div>
+            <Button>
+              <Settings className="h-4 w-4 mr-2" />
+              Salvar Prompts
+            </Button>
+          </CardContent>
+        </Card>
+
         {/* Recent Categorizations */}
         <Card>
           <CardHeader>

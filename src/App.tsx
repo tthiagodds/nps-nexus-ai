@@ -18,7 +18,7 @@ import AISettings from "./pages/AISettings";
 import HSMTemplates from "./pages/HSMTemplates";
 import ChannelConfig from "./pages/ChannelConfig";
 import DatabasePage from "./pages/Database";
-import WhatsAppConfig from "./pages/WhatsAppConfig";
+import Blacklist from "./pages/Blacklist";
 import Automations from "./pages/Automations";
 import AutomationReports from "./pages/reports/AutomationReports";
 import OpinionReports from "./pages/reports/OpinionReports";
@@ -54,7 +54,7 @@ const App = () => (
           <Route path="/ai-categorization" element={<AICategorization />} />
           
           {/* Comunicação */}
-          <Route path="/whatsapp-config" element={<WhatsAppConfig />} />
+          <Route path="/blacklist" element={<Blacklist />} />
           <Route path="/automations" element={<Automations />} />
           <Route path="/dispatches" element={<Dispatches />} />
           <Route path="/hsm-templates" element={<HSMTemplates />} />

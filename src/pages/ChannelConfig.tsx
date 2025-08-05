@@ -134,29 +134,75 @@ export default function ChannelConfig() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="whatsapp-business-id">Business Account ID</Label>
-                    <Input id="whatsapp-business-id" placeholder="ID da conta business" />
+                    <Input id="whatsapp-business-id" placeholder="ID da conta business" defaultValue="123456789012345" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="whatsapp-phone">Número do Telefone</Label>
-                    <Input id="whatsapp-phone" placeholder="+55 11 99999-9999" />
+                    <Label htmlFor="whatsapp-phone">Phone Number ID</Label>
+                    <Input id="whatsapp-phone" placeholder="ID do número do telefone" defaultValue="987654321098765" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="whatsapp-token">Access Token</Label>
-                  <Input id="whatsapp-token" placeholder="••••••••••••••••" />
+                  <Input id="whatsapp-token" type="password" placeholder="••••••••••••••••" defaultValue="••••••••••••••••••••••••••••••••••••••••" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="app-id">App ID</Label>
-                  <Input id="app-id" placeholder="ID da aplicação Meta" />
+                  <Label htmlFor="webhook-url">Webhook URL</Label>
+                  <Input id="webhook-url" placeholder="https://seu-dominio.com/webhook/whatsapp" defaultValue="https://sentai.app/webhook/whatsapp" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="app-secret">App Secret</Label>
-                  <Input id="app-secret" type="password" placeholder="••••••••••••••••" />
+                  <Label htmlFor="verify-token">Verify Token</Label>
+                  <Input id="verify-token" placeholder="Token de verificação do webhook" defaultValue="sentai-webhook-verify-token" />
                 </div>
-                <Button>
-                  <Save className="h-4 w-4 mr-2" />
-                  Salvar Configurações
-                </Button>
+
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                  <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm font-medium">Status: Conectado</span>
+                  <div className="ml-auto text-xs text-muted-foreground">
+                    Última sincronização: 2 min atrás
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button>
+                    <Save className="h-4 w-4 mr-2" />
+                    Salvar Configurações
+                  </Button>
+                  <Button variant="outline">
+                    Testar Conexão
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Informações da Conta Meta</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Nome da Empresa</p>
+                    <p className="font-medium">SENTai Solutions</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Número do WhatsApp</p>
+                    <p className="font-medium">+55 11 98765-4321</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Status da Verificação</p>
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">Verificado</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Limite de Mensagens</p>
+                    <p className="font-medium">850/1000 por dia</p>
+                    <div className="w-full bg-muted rounded-full h-2 mt-1">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '85%' }}></div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
