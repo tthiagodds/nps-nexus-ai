@@ -22,7 +22,8 @@ export function ChannelDistribution({ value, onChange }: ChannelDistributionProp
   const [channels, setChannels] = useState<Channel[]>([
     { id: 'email', name: 'Email', icon: Mail, enabled: true, percentage: 50 },
     { id: 'sms', name: 'SMS', icon: MessageSquare, enabled: false, percentage: 0 },
-    { id: 'whatsapp', name: 'WhatsApp', icon: Smartphone, enabled: true, percentage: 50 }
+    { id: 'whatsapp', name: 'WhatsApp Business', icon: Smartphone, enabled: true, percentage: 50 },
+    { id: 'whatsapp_enterprise', name: 'WhatsApp Enterprise', icon: Smartphone, enabled: false, percentage: 0 }
   ]);
 
   useEffect(() => {

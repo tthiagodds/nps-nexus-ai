@@ -52,6 +52,7 @@ const App = () => (
           <Route path="/reports/ai-categorization" element={<AICategorization />} />
           <Route path="/reports/automation" element={<AutomationReports />} />
           <Route path="/reports/opinions" element={<OpinionReports />} />
+          <Route path="/reports/dispatch" element={<DispatchReports />} />
           
           {/* Inteligência Artificial */}
           <Route path="/ai-settings" element={<AISettings />} />

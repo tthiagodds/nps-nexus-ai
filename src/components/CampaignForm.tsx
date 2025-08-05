@@ -49,6 +49,9 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
     reminder: campaign?.reminder || 7,
     aiCategorization: campaign?.aiCategorization || false,
     autoResponse: campaign?.autoResponse || false,
+    aiChannel: campaign?.aiChannel || '',
+    templateType: campaign?.templateType || 'custom',
+    selectedTemplate: campaign?.selectedTemplate || '',
     template: {
       subject: campaign?.template?.subject || '',
       message: campaign?.template?.message || '',
@@ -169,6 +172,24 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
               value={formData.channels}
               onChange={(channels) => setFormData({...formData, channels})}
             />
+            
+            <div>
+              <Label htmlFor="aiChannel">Canal para Resposta Automática por IA</Label>
+              <Select value={formData.aiChannel || ''} onValueChange={(value) => setFormData({...formData, aiChannel: value})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o canal para mensagens automáticas da IA" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="sms">SMS</SelectItem>
+                  <SelectItem value="whatsapp">WhatsApp Business</SelectItem>
+                  <SelectItem value="whatsapp_enterprise">WhatsApp Enterprise</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                Canal que será usado para enviar respostas automáticas geradas por IA
+              </p>
+            </div>
             
             <div>
               <Label htmlFor="targetAudience">Público-alvo (Visualização)</Label>
@@ -402,40 +423,79 @@ export function CampaignForm({ open, onOpenChange, campaign, mode }: CampaignFor
             <div>
               <h3 className="text-lg font-semibold mb-2">Template da Mensagem</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Configure a mensagem que será enviada aos clientes com o link da pesquisa
+                Selecione um template criado anteriormente ou configure uma mensagem personalizada
               </p>
             </div>
 
-{formData.channels.some(c => c.enabled && c.id === 'email') && (
+            <div className="space-y-4">
               <div>
-                <Label htmlFor="subject">Assunto do Email</Label>
-                <Input
-                  id="subject"
-                  value={formData.template.subject}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    template: {...formData.template, subject: e.target.value}
-                  })}
-                  placeholder="Como foi sua experiência conosco?"
-                />
+                <Label htmlFor="templateType">Tipo de Template</Label>
+                <Select value={formData.templateType || 'custom'} onValueChange={(value) => setFormData({...formData, templateType: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o tipo de template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="custom">Template Personalizado</SelectItem>
+                    <SelectItem value="predefined">Template Pré-definido</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            )}
 
-            <div>
-              <Label htmlFor="message">Mensagem</Label>
-              <Textarea
-                id="message"
-                value={formData.template.message}
-                onChange={(e) => setFormData({
-                  ...formData,
-                  template: {...formData.template, message: e.target.value}
-                })}
-                placeholder="Olá [NOME]! Gostaríamos de saber como foi sua experiência conosco. Clique no link abaixo para responder nossa pesquisa: [LINK]"
-                rows={8}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Use [NOME] para o nome do cliente e [LINK] para o link da pesquisa
-              </p>
+              {formData.templateType === 'predefined' && (
+                <div>
+                  <Label htmlFor="selectedTemplate">Template Pré-definido</Label>
+                  <Select value={formData.selectedTemplate || ''} onValueChange={(value) => setFormData({...formData, selectedTemplate: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um template criado anteriormente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="email_nps_1">Template Email NPS - Simples</SelectItem>
+                      <SelectItem value="email_nps_2">Template Email NPS - Corporativo</SelectItem>
+                      <SelectItem value="sms_nps_1">Template SMS NPS - Direto</SelectItem>
+                      <SelectItem value="whatsapp_nps_1">Template WhatsApp NPS - Casual</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Templates criados em &quot;Configurações Gerais &gt; Templates de Comunicação&quot;
+                  </p>
+                </div>
+              )}
+
+              {(formData.templateType === 'custom' || !formData.templateType) && (
+                <>
+                  {formData.channels.some(c => c.enabled && c.id === 'email') && (
+                    <div>
+                      <Label htmlFor="subject">Assunto do Email</Label>
+                      <Input
+                        id="subject"
+                        value={formData.template.subject}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          template: {...formData.template, subject: e.target.value}
+                        })}
+                        placeholder="Como foi sua experiência conosco?"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="message">Mensagem</Label>
+                    <Textarea
+                      id="message"
+                      value={formData.template.message}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        template: {...formData.template, message: e.target.value}
+                      })}
+                      placeholder="Olá [NOME]! Gostaríamos de saber como foi sua experiência conosco. Clique no link abaixo para responder nossa pesquisa: [LINK]"
+                      rows={8}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Use [NOME] para o nome do cliente e [LINK] para o link da pesquisa
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="p-4 border rounded-lg bg-muted/50">
