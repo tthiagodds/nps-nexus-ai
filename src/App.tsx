@@ -17,6 +17,7 @@ import OpinionSettings from "./pages/OpinionSettings";
 import AISettings from "./pages/AISettings";
 import HSMTemplates from "./pages/HSMTemplates";
 import ChannelConfig from "./pages/ChannelConfig";
+import CommunicationTemplates from "./pages/CommunicationTemplates";
 import DatabasePage from "./pages/Database";
 import Blacklist from "./pages/Blacklist";
 import Automations from "./pages/Automations";
@@ -42,6 +43,7 @@ const App = () => (
           {/* Configurações Gerais */}
           <Route path="/campaigns" element={<Campaigns />} />
           <Route path="/channel-config" element={<ChannelConfig />} />
+          <Route path="/communication-templates" element={<CommunicationTemplates />} />
           <Route path="/opinion-settings" element={<OpinionSettings />} />
           <Route path="/database" element={<DatabasePage />} />
           

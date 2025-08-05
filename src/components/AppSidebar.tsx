@@ -37,6 +37,7 @@ const menuItems = [
     items: [
       { title: "Campanhas", url: "/campaigns", icon: Target },
       { title: "Configuração de Canais", url: "/channel-config", icon: Send },
+      { title: "Templates de Comunicação", url: "/communication-templates", icon: FileType },
       { title: "Configuração de Opiniões", url: "/opinion-settings", icon: MessageSquare },
       { title: "Base de Dados", url: "/database", icon: Database },
       { title: "Blacklist", url: "/blacklist", icon: Users },
