@@ -70,79 +70,236 @@ export default function HSMTemplates() {
                     Novo Template
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Novo Template HSM</DialogTitle>
+                    <DialogTitle>Criar Template HSM</DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="template-name">Nome do Template</Label>
-                        <Input id="template-name" placeholder="Ex: confirmacao_pedido" />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="template-category">Categoria</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione a categoria" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="transactional">Transacional</SelectItem>
-                            <SelectItem value="marketing">Marketing</SelectItem>
-                            <SelectItem value="utility">Utilitário</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="whatsapp-account">Conta WhatsApp</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione a conta" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="enterprise">WhatsApp Business API (Enterprise)</SelectItem>
-                            <SelectItem value="business">WhatsApp Business (WAHA)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+                  <Tabs defaultValue="config" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                      <TabsTrigger value="config">Configuração</TabsTrigger>
+                      <TabsTrigger value="components">Componentes</TabsTrigger>
+                      <TabsTrigger value="preview">Pré-visualização</TabsTrigger>
+                    </TabsList>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="template-content">Conteúdo do Template</Label>
-                      <Textarea 
-                        id="template-content"
-                        placeholder="Olá {{1}}, seu pedido {{2}} foi confirmado..."
-                        className="h-32"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Variáveis</Label>
-                        <div className="text-sm text-muted-foreground">
-                          Use variáveis dinâmicas como: {`{{nome}}, {{pedido}}`}, etc.
+                    <TabsContent value="config" className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="template-name">Nome do Template</Label>
+                          <Input id="template-name" placeholder="ex: confirmacao_pedido" />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="template-language">Idioma</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o idioma" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pt_BR">Português (BR)</SelectItem>
+                              <SelectItem value="en_US">English (US)</SelectItem>
+                              <SelectItem value="es_ES">Español</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="template-category">Categoria</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione a categoria" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="MARKETING">Marketing</SelectItem>
+                              <SelectItem value="UTILITY">Utilitário</SelectItem>
+                              <SelectItem value="AUTHENTICATION">Autenticação</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="whatsapp-account">Conta WhatsApp</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione a conta" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="waba-1">WABA - Empresa Principal</SelectItem>
+                              <SelectItem value="waba-2">WABA - Filial Norte</SelectItem>
+                              <SelectItem value="waha-1">WAHA - Suporte</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
-                      
-                      <div className="space-y-2">
-                        <Label>Preview do HSM</Label>
-                        <div className="p-3 bg-muted rounded-lg">
-                          <div className="text-sm text-muted-foreground mb-2">Preview:</div>
-                          <div className="bg-background p-3 rounded border text-sm">
-                            Olá [nome], seu pedido [pedido] foi confirmado...
+                    </TabsContent>
+                    
+                    <TabsContent value="components" className="space-y-6">
+                      {/* Header Component */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-sm">Cabeçalho (Opcional)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Tipo</Label>
+                              <Select>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecione o tipo" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="TEXT">Texto</SelectItem>
+                                  <SelectItem value="IMAGE">Imagem</SelectItem>
+                                  <SelectItem value="VIDEO">Vídeo</SelectItem>
+                                  <SelectItem value="DOCUMENT">Documento</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Conteúdo</Label>
+                              <Input placeholder="Texto do cabeçalho ou URL da mídia" />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Body Component */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-sm">Corpo (Obrigatório)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Mensagem</Label>
+                            <Textarea 
+                              placeholder="Olá {{1}}, seu pedido {{2}} foi confirmado com sucesso!"
+                              className="h-24"
+                            />
+                            <div className="text-xs text-muted-foreground">
+                              Use variáveis como: {`{{1}}, {{2}}`}, etc. para conteúdo dinâmico
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Footer Component */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-sm">Rodapé (Opcional)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <Label>Texto do Rodapé</Label>
+                            <Input placeholder="Texto adicional, como informações de contato" />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Buttons Component */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-sm">Botões (Opcional)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg">
+                              <div className="space-y-2">
+                                <Label>Tipo</Label>
+                                <Select>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Tipo do botão" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="QUICK_REPLY">Resposta Rápida</SelectItem>
+                                    <SelectItem value="URL">URL</SelectItem>
+                                    <SelectItem value="PHONE_NUMBER">Telefone</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Texto</Label>
+                                <Input placeholder="Texto do botão" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Valor</Label>
+                                <Input placeholder="URL, telefone ou payload" />
+                              </div>
+                            </div>
+                            <Button variant="outline" size="sm">
+                              <Plus className="h-4 w-4 mr-2" />
+                              Adicionar Botão
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                    
+                    <TabsContent value="preview" className="space-y-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <Label>Variáveis de Exemplo</Label>
+                          <div className="space-y-2">
+                            <div className="grid grid-cols-2 gap-2">
+                              <Label className="text-xs">{`{{1}}`}</Label>
+                              <Input placeholder="João Silva" className="text-sm" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Label className="text-xs">{`{{2}}`}</Label>
+                              <Input placeholder="#12345" className="text-sm" />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          <Label>Preview do WhatsApp</Label>
+                          <div className="max-w-sm mx-auto">
+                            <div className="bg-[#128C7E] p-4 rounded-t-lg">
+                              <div className="flex items-center gap-2 text-white">
+                                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                                  <MessageSquare className="h-4 w-4" />
+                                </div>
+                                <div>
+                                  <div className="font-semibold text-sm">Empresa</div>
+                                  <div className="text-xs opacity-75">online</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="bg-[#ECE5DD] p-4 min-h-[300px] rounded-b-lg">
+                              <div className="bg-white p-3 rounded-lg shadow-sm max-w-xs">
+                                <div className="space-y-2">
+                                  <div className="text-xs text-gray-500 font-medium">CABEÇALHO</div>
+                                  <div className="text-sm font-semibold">Seu pedido foi confirmado!</div>
+                                  <div className="text-sm">Olá João Silva, seu pedido #12345 foi confirmado com sucesso!</div>
+                                  <div className="text-xs text-gray-500 mt-2">Empresa - Suporte</div>
+                                  <div className="flex gap-1 mt-2">
+                                    <Button size="sm" variant="outline" className="text-xs h-6">
+                                      Ver Pedido
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="text-xs h-6">
+                                      Contato
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
+                    </TabsContent>
+                  </Tabs>
+                  
+                  <div className="flex justify-between items-center pt-4 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      Status: <Badge variant="secondary">Rascunho</Badge>
                     </div>
-
-                    <div className="flex justify-end gap-2">
+                    <div className="flex gap-2">
                       <Button variant="outline" onClick={() => setShowTemplateForm(false)}>
                         Cancelar
                       </Button>
+                      <Button variant="outline">
+                        Salvar Rascunho
+                      </Button>
                       <Button onClick={() => setShowTemplateForm(false)}>
-                        Criar Template
+                        Enviar para Aprovação
                       </Button>
                     </div>
                   </div>
