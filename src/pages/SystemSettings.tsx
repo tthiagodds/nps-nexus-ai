@@ -829,14 +829,92 @@ export default function SystemSettings() {
             </div>
           </TabsContent>
 
-          {/* Outras tabs permanecem iguais... */}
+          {/* Gestão de Usuários */}
           <TabsContent value="users">
             <Card>
               <CardHeader>
-                <CardTitle>Gestão de Usuários (Mock)</CardTitle>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Gestão de Usuários</CardTitle>
+                  <Button className="bg-green-500 hover:bg-green-600">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Novo Usuário
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Funcionalidade de usuários em desenvolvimento...</p>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Usuário</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Permissões</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Último Login</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-sm text-blue-600">{user.email}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">{user.type}</span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {user.permissions.slice(0, 2).map((permission, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {permission}
+                              </Badge>
+                            ))}
+                            {user.permissions.length > 2 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{user.permissions.length - 2}
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={user.status === "Ativo" ? "default" : "secondary"}
+                            className={user.status === "Ativo" ? "bg-green-500 hover:bg-green-600" : ""}
+                          >
+                            {user.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">{user.lastLogin}</span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setIsUserModalOpen(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </TabsContent>
