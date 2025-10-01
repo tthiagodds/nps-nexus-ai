@@ -67,10 +67,117 @@ export default function SystemSettings() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   
+  // Estados para validação visual
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>({});
+  
   // Estados legados (manter para compatibilidade)
   const [systemName, setSystemName] = useState("OpinionHub Pro");
   const [timezone, setTimezone] = useState("America/Sao_Paulo");
   const [logo, setLogo] = useState("/placeholder.svg");
+
+  // Funções de formatação e validação
+  const formatCEP = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length <= 8) {
+      return cleaned.replace(/(\d{5})(\d{3})/, '$1-$2');
+    }
+    return cleaned.slice(0, 8).replace(/(\d{5})(\d{3})/, '$1-$2');
+  };
+
+  const formatPhone = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    // Limitar a 11 dígitos (DDD + 9 dígitos para celular)
+    const limited = cleaned.slice(0, 11);
+    if (limited.length <= 10) {
+      return limited.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    }
+    return limited.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+  };
+
+  const formatCNPJ = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length <= 11) {
+      // CPF
+      return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+    // CNPJ
+    return cleaned.slice(0, 14).replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+  };
+
+  const formatNumber = (value: string) => {
+    // Aceitar apenas números
+    return value.replace(/\D/g, '');
+  };
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateURL = (url: string) => {
+    if (!url) return true; // Campo opcional
+    
+    // Não aceitar emails
+    if (url.includes('@')) return false;
+    
+    try {
+      // Garantir que tenha protocolo
+      let urlToTest = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        urlToTest = `https://${url}`;
+      }
+      
+      const urlObj = new URL(urlToTest);
+      
+      // Verificar se é um domínio válido (deve ter pelo menos um ponto)
+      const hostname = urlObj.hostname;
+      if (!hostname.includes('.') || hostname.endsWith('.')) {
+        return false;
+      }
+      
+      // Verificar se não é um email disfarçado
+      if (hostname.includes('@')) {
+        return false;
+      }
+      
+      return ['http:', 'https:'].includes(urlObj.protocol);
+    } catch {
+      return false;
+    }
+  };
+
+  const formatURL = (value: string) => {
+    if (!value) return '';
+    
+    // Remover espaços
+    let cleaned = value.trim();
+    
+    // Se não começar com http, adicionar https automaticamente
+    if (cleaned && !cleaned.startsWith('http://') && !cleaned.startsWith('https://')) {
+      cleaned = `https://${cleaned}`;
+    }
+    
+    return cleaned;
+  };
+
+  // Função para validar um campo específico
+  const validateField = (field: string, value: string) => {
+    switch (field) {
+      case 'email':
+        return !value || validateEmail(value);
+      case 'site_empresa':
+        return !value || validateURL(value);
+      case 'cep':
+        return !value || /^\d{5}-\d{3}$/.test(value);
+      case 'telefone':
+      case 'telefone_contato':
+        return !value || /^\(\d{2}\) \d{4,5}-\d{4}$/.test(value);
+      case 'numero':
+        return !value || /^\d+$/.test(value);
+      default:
+        return true;
+    }
+  };
 
   // Carregar dados da empresa ao montar o componente
   useEffect(() => {
@@ -130,9 +237,40 @@ export default function SystemSettings() {
 
   // Função para atualizar campo da empresa
   const handleEmpresaChange = (field: string, value: string) => {
+    let formattedValue = value;
+    
+    // Aplicar formatação específica para cada campo
+    switch (field) {
+      case 'cep':
+        formattedValue = formatCEP(value);
+        break;
+      case 'telefone':
+      case 'telefone_contato':
+        formattedValue = formatPhone(value);
+        break;
+      case 'cpf_cnpj':
+        formattedValue = formatCNPJ(value);
+        break;
+      case 'numero':
+        formattedValue = formatNumber(value);
+        break;
+      case 'site_empresa':
+        formattedValue = formatURL(value);
+        break;
+      default:
+        formattedValue = value;
+    }
+    
     setEmpresaData(prev => ({
       ...prev,
-      [field]: value
+      [field]: formattedValue
+    }));
+    
+    // Validar campo e atualizar estado de erro
+    const isValid = validateField(field, formattedValue);
+    setFieldErrors(prev => ({
+      ...prev,
+      [field]: !isValid
     }));
   };
 
@@ -142,7 +280,56 @@ export default function SystemSettings() {
       setIsSaving(true);
       setMessage({ type: '', text: '' });
       
-      await empresaAPI.update(empresaData);
+      // Validações locais antes de enviar
+      const validationErrors: string[] = [];
+      
+      if (empresaData.email && !validateEmail(empresaData.email)) {
+        validationErrors.push('E-mail deve ter um formato válido');
+      }
+      
+      if (empresaData.site_empresa && !validateURL(empresaData.site_empresa)) {
+        validationErrors.push('Website deve ser um endereço válido (ex: https://exemplo.com) e não pode ser um e-mail');
+      }
+      
+      if (empresaData.cep && !/^\d{5}-\d{3}$/.test(empresaData.cep)) {
+        validationErrors.push('CEP deve ter o formato 00000-000');
+      }
+      
+      if (empresaData.telefone && !/^\(\d{2}\) \d{4,5}-\d{4}$/.test(empresaData.telefone)) {
+        validationErrors.push('Telefone deve ter o formato (00) 0000-0000 ou (00) 00000-0000');
+      }
+      
+      if (empresaData.telefone_contato && !/^\(\d{2}\) \d{4,5}-\d{4}$/.test(empresaData.telefone_contato)) {
+        validationErrors.push('Telefone de contato deve ter o formato (00) 0000-0000 ou (00) 00000-0000');
+      }
+      
+      if (empresaData.numero && !/^\d+$/.test(empresaData.numero)) {
+        validationErrors.push('Número deve conter apenas dígitos');
+      }
+      
+      if (validationErrors.length > 0) {
+        setMessage({
+          type: 'error',
+          text: `Erros de validação:\n\n${validationErrors.map(error => `• ${error}`).join('\n')}`
+        });
+        return;
+      }
+      
+      // Preparar dados para envio (remover formatação quando necessário)
+      const dataToSend = {
+        ...empresaData,
+        // Manter formatação para visualização, API deve aceitar com formatação
+        // Se a API precisar de dados sem formatação, descomente as linhas abaixo:
+        // cep: empresaData.cep.replace(/\D/g, ''),
+        // telefone: empresaData.telefone.replace(/\D/g, ''),
+        // telefone_contato: empresaData.telefone_contato.replace(/\D/g, ''),
+        // cpf_cnpj: empresaData.cpf_cnpj.replace(/\D/g, ''),
+      };
+      
+      await empresaAPI.update(dataToSend);
+      
+      // Limpar erros de validação visual
+      setFieldErrors({});
       
       setMessage({ 
         type: 'success', 
@@ -155,10 +342,40 @@ export default function SystemSettings() {
       }, 3000);
     } catch (error: any) {
       console.error('Erro ao salvar dados da empresa:', error);
-      setMessage({ 
-        type: 'error', 
-        text: error.message || 'Erro ao salvar dados da empresa. Tente novamente.' 
-      });
+      
+      // Verificar se é um erro de validação com detalhes específicos
+      if (error.isValidationError && error.errors) {
+        const errorMessages = Object.entries(error.errors).map(([field, message]) => {
+          // Traduzir nomes de campos para português quando possível
+          const fieldNames: { [key: string]: string } = {
+            'email': 'E-mail',
+            'cep': 'CEP',
+            'telefone': 'Telefone',
+            'telefone_contato': 'Telefone de Contato',
+            'nome_empresa': 'Nome da Empresa',
+            'razao_social': 'Razão Social',
+            'cpf_cnpj': 'CPF/CNPJ',
+            'endereco': 'Endereço',
+            'numero': 'Número',
+            'cidade': 'Cidade',
+            'estado': 'Estado',
+            'site_empresa': 'Website da Empresa'
+          };
+          
+          const fieldDisplay = fieldNames[field] || field;
+          return `• ${fieldDisplay}: ${message}`;
+        }).join('\n');
+        
+        setMessage({ 
+          type: 'error', 
+          text: `${error.message}\n\n${errorMessages}`
+        });
+      } else {
+        setMessage({ 
+          type: 'error', 
+          text: error.message || 'Erro ao salvar dados da empresa. Tente novamente.' 
+        });
+      }
     } finally {
       setIsSaving(false);
     }
@@ -285,7 +502,7 @@ export default function SystemSettings() {
             ) : (
               <CheckCircle className="h-4 w-4" />
             )}
-            <AlertDescription>{message.text}</AlertDescription>
+            <AlertDescription className="whitespace-pre-line">{message.text}</AlertDescription>
           </Alert>
         )}
 
@@ -365,7 +582,12 @@ export default function SystemSettings() {
                             type="email"
                             value={empresaData.email}
                             onChange={(e) => handleEmpresaChange('email', e.target.value)}
+                            placeholder="contato@empresa.com"
+                            className={fieldErrors.email ? "border-red-500" : ""}
                           />
+                          {fieldErrors.email && (
+                            <p className="text-xs text-red-500">Email deve ter um formato válido</p>
+                          )}
                         </div>
                         
                         <div className="space-y-2">
@@ -374,7 +596,12 @@ export default function SystemSettings() {
                             id="telefone"
                             value={empresaData.telefone}
                             onChange={(e) => handleEmpresaChange('telefone', e.target.value)}
+                            placeholder="(11) 3000-0000"
+                            className={fieldErrors.telefone ? "border-red-500" : ""}
                           />
+                          {fieldErrors.telefone && (
+                            <p className="text-xs text-red-500">Telefone deve ter o formato (00) 0000-0000 ou (00) 00000-0000</p>
+                          )}
                         </div>
                       </div>
                       
@@ -387,7 +614,12 @@ export default function SystemSettings() {
                               id="cep"
                               value={empresaData.cep}
                               onChange={(e) => handleEmpresaChange('cep', e.target.value)}
+                              placeholder="00000-000"
+                              className={fieldErrors.cep ? "border-red-500" : ""}
                             />
+                            {fieldErrors.cep && (
+                              <p className="text-xs text-red-500">CEP deve ter o formato 00000-000</p>
+                            )}
                           </div>
                           
                           <div className="space-y-2">
@@ -405,7 +637,12 @@ export default function SystemSettings() {
                               id="numero"
                               value={empresaData.numero}
                               onChange={(e) => handleEmpresaChange('numero', e.target.value)}
+                              placeholder="123"
+                              className={fieldErrors.numero ? "border-red-500" : ""}
                             />
+                            {fieldErrors.numero && (
+                              <p className="text-xs text-red-500">Número deve conter apenas dígitos</p>
+                            )}
                           </div>
                           
                           <div className="space-y-2">
@@ -497,10 +734,13 @@ export default function SystemSettings() {
                         id="telefone_contato"
                         value={empresaData.telefone_contato}
                         onChange={(e) => handleEmpresaChange('telefone_contato', e.target.value)}
-                        placeholder="+55 11 9999-9999"
-                        className="pl-10"
+                        placeholder="(11) 99999-9999"
+                        className={`pl-10 ${fieldErrors.telefone_contato ? "border-red-500" : ""}`}
                       />
                     </div>
+                    {fieldErrors.telefone_contato && (
+                      <p className="text-xs text-red-500">Telefone deve ter o formato (00) 0000-0000 ou (00) 00000-0000</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -512,9 +752,12 @@ export default function SystemSettings() {
                         value={empresaData.site_empresa}
                         onChange={(e) => handleEmpresaChange('site_empresa', e.target.value)}
                         placeholder="https://empresa.com"
-                        className="pl-10"
+                        className={`pl-10 ${fieldErrors.site_empresa ? "border-red-500" : ""}`}
                       />
                     </div>
+                    {fieldErrors.site_empresa && (
+                      <p className="text-xs text-red-500">Website deve ser um endereço válido (ex: https://exemplo.com) e não pode ser um e-mail</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>

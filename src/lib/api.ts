@@ -50,6 +50,13 @@ export const apiRequest = async (
   const data = await response.json();
 
   if (!response.ok) {
+    // Se há erros de validação específicos, criar um erro customizado
+    if (data.errors && typeof data.errors === 'object') {
+      const validationError = new Error(data.message || 'Erro de validação');
+      (validationError as any).errors = data.errors;
+      (validationError as any).isValidationError = true;
+      throw validationError;
+    }
     throw new Error(data.message || 'Erro na requisição');
   }
 
