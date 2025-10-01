@@ -1,7 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+interface Empresa {
+  id_empresa: number;
+  nome_empresa: string;
+  razao_social: string;
+  cpf_cnpj: string;
+  cidade: string;
+  estado: string;
+  telefone: string;
+  email: string;
+}
+
 interface User {
-  id: string;
+  id_login: string;
   id_empresa: number;
   nome: string;
   username: string;
@@ -14,6 +25,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  empresa: Empresa | null;
   token: string | null;
   login: (username: string, password: string, id_empresa: string) => Promise<void>;
   logout: () => void;
@@ -37,6 +49,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [empresa, setEmpresa] = useState<Empresa | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -44,24 +57,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Verificar se há token armazenado no localStorage
     const storedToken = localStorage.getItem('auth_token');
     const storedUser = localStorage.getItem('auth_user');
+    const storedEmpresa = localStorage.getItem('auth_empresa');
     
     if (storedToken && storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         
         // Verificar se os dados do usuário são válidos
-        if (parsedUser && parsedUser.id && (parsedUser.username || parsedUser.email)) {
+        if (parsedUser && parsedUser.id_login && (parsedUser.username || parsedUser.email)) {
           setToken(storedToken);
           setUser(parsedUser);
+          
+          // Carregar dados da empresa se disponível
+          if (storedEmpresa) {
+            try {
+              const parsedEmpresa = JSON.parse(storedEmpresa);
+              setEmpresa(parsedEmpresa);
+            } catch (empresaError) {
+              console.warn('Erro ao fazer parse dos dados da empresa:', empresaError);
+            }
+          }
         } else {
           console.warn('Dados de usuário inválidos encontrados, limpando localStorage');
           localStorage.removeItem('auth_token');
           localStorage.removeItem('auth_user');
+          localStorage.removeItem('auth_empresa');
         }
       } catch (error) {
         console.error('Erro ao fazer parse dos dados do usuário:', error);
         localStorage.removeItem('auth_token');
         localStorage.removeItem('auth_user');
+        localStorage.removeItem('auth_empresa');
       }
     }
     
@@ -98,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Tratar respostas de sucesso (200)
       if (response.status === 200) {
         if (data.success === true) {
-          const { token: authToken, user: userData } = data.data || {};
+          const { token: authToken, user: userData, empresa: empresaData } = data.data || {};
           
           if (!authToken || !userData) {
             throw new Error('Resposta do servidor incompleta. Token ou dados do usuário não encontrados.');
@@ -106,7 +132,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           
           // Mapear os dados do usuário corretamente
           const mappedUser = {
-            id: userData.id,
+            id_login: userData.id_login,
             id_empresa: userData.id_empresa,
             nome: userData.nome,
             username: userData.username,
@@ -117,12 +143,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             updated_at: userData.updated_at
           };
           
+          // Mapear os dados da empresa se disponível
+          let mappedEmpresa = null;
+          if (empresaData) {
+            mappedEmpresa = {
+              id_empresa: empresaData.id_empresa,
+              nome_empresa: empresaData.nome_empresa,
+              razao_social: empresaData.razao_social,
+              cpf_cnpj: empresaData.cpf_cnpj,
+              cidade: empresaData.cidade,
+              estado: empresaData.estado,
+              telefone: empresaData.telefone,
+              email: empresaData.email
+            };
+          }
+          
           setToken(authToken);
           setUser(mappedUser);
+          setEmpresa(mappedEmpresa);
           
           // Armazenar no localStorage
           localStorage.setItem('auth_token', authToken);
           localStorage.setItem('auth_user', JSON.stringify(mappedUser));
+          if (mappedEmpresa) {
+            localStorage.setItem('auth_empresa', JSON.stringify(mappedEmpresa));
+          }
           return; // Login realizado com sucesso
         } else {
           // success: false com status 200
@@ -198,11 +243,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Limpar estado do React
       setUser(null);
+      setEmpresa(null);
       setToken(null);
       
       // Limpar localStorage
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_empresa');
       
       // Também limpar qualquer outro dado relacionado que possa existir
       localStorage.removeItem('user_preferences');
@@ -214,6 +261,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Mesmo com erro, garantir que o estado seja limpo
       setUser(null);
+      setEmpresa(null);
       setToken(null);
       
       // Tentar limpar localStorage mesmo com erro
@@ -227,6 +275,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextType = {
     user,
+    empresa,
     token,
     login,
     logout,

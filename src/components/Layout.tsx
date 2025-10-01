@@ -14,7 +14,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const { user } = useAuth();
+  const { user, empresa } = useAuth();
   const { performLogout } = useLogout();
   
   const handleLogout = async () => {
@@ -134,7 +134,7 @@ export default function Layout({ children }: LayoutProps) {
                     <div>
                       <p className="font-medium">{user?.nome || 'Usuário'}</p>
                       <p className="text-sm text-muted-foreground">{user?.email || 'email@empresa.com'}</p>
-                      <p className="text-xs text-muted-foreground">Empresa: {user?.id_empresa || 'N/A'}</p>
+                      <p className="text-xs text-muted-foreground">Empresa: {empresa?.nome_empresa || 'N/A'}</p>
                     </div>
                   </div>
                   
