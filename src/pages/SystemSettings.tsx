@@ -835,13 +835,88 @@ export default function SystemSettings() {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Gestão de Usuários</CardTitle>
-                  <Button className="bg-green-500 hover:bg-green-600">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Novo Usuário
-                  </Button>
+                  <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-green-500 hover:bg-green-600">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Novo Usuário
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {selectedUser ? "Editar Usuário" : "Novo Usuário"}
+                        </DialogTitle>
+                        <DialogDescription>
+                          Preencha os dados do usuário e defina suas permissões
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="userName">Nome Completo</Label>
+                          <Input id="userName" placeholder="João Silva" />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="userEmail">Email</Label>
+                          <Input id="userEmail" type="email" placeholder="joao@empresa.com" />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="userType">Tipo de Usuário</Label>
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o tipo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {userTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value}>
+                                  <div className="flex flex-col">
+                                    <span>{type.label}</span>
+                                    <span className="text-xs text-muted-foreground">{type.description}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label>Status</Label>
+                          <div className="flex items-center space-x-2">
+                            <Switch />
+                            <Label>Usuário Ativo</Label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Permissões</Label>
+                        <div className="grid grid-cols-2 gap-2 p-4 border rounded-lg">
+                          {availablePermissions.map((permission) => (
+                            <div key={permission} className="flex items-center space-x-2">
+                              <input type="checkbox" id={permission} />
+                              <Label htmlFor={permission} className="text-sm">{permission}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsUserModalOpen(false)}>
+                          Cancelar
+                        </Button>
+                        <Button>
+                          {selectedUser ? "Salvar Alterações" : "Criar Usuário"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
+              
+              <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -850,26 +925,26 @@ export default function SystemSettings() {
                       <TableHead>Permissões</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Último Login</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
+                      <TableHead>Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {users.map((user) => (
                       <TableRow key={user.id}>
                         <TableCell>
-                          <div>
-                            <div className="font-medium">{user.name}</div>
-                            <div className="text-sm text-blue-600">{user.email}</div>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{user.name}</span>
+                            <span className="text-sm text-blue-600">{user.email}</span>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm">{user.type}</span>
+                          <Badge variant="outline">{user.type}</Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {user.permissions.slice(0, 2).map((permission, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                {permission}
+                            {user.permissions.slice(0, 2).map((perm) => (
+                              <Badge key={perm} variant="secondary" className="text-xs">
+                                {perm}
                               </Badge>
                             ))}
                             {user.permissions.length > 2 && (
@@ -887,14 +962,12 @@ export default function SystemSettings() {
                             {user.status}
                           </Badge>
                         </TableCell>
+                        <TableCell className="text-sm">{user.lastLogin}</TableCell>
                         <TableCell>
-                          <span className="text-sm">{user.lastLogin}</span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                          <div className="flex gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
                               onClick={() => {
                                 setSelectedUser(user);
                                 setIsUserModalOpen(true);
@@ -902,11 +975,7 @@ export default function SystemSettings() {
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-600 hover:text-red-700"
-                            >
+                            <Button size="sm" variant="outline">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -919,26 +988,161 @@ export default function SystemSettings() {
             </Card>
           </TabsContent>
 
+          {/* Configuração de Permissões */}
           <TabsContent value="permissions">
-            <Card>
-              <CardHeader>
-                <CardTitle>Permissões (Mock)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Funcionalidade de permissões em desenvolvimento...</p>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Tipos de Usuário</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {userTypes.map((type) => (
+                      <div key={type.value} className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-medium">{type.label}</h4>
+                            <p className="text-sm text-muted-foreground">{type.description}</p>
+                          </div>
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Permissões Disponíveis</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {availablePermissions.map((permission) => (
+                      <div key={permission} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+                          <span>{permission}</span>
+                        </div>
+                        <Switch />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
+          {/* Plano e Uso */}
           <TabsContent value="plan">
-            <Card>
-              <CardHeader>
-                <CardTitle>Plano & Uso (Mock)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Funcionalidade de planos em desenvolvimento...</p>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Plano Atual: {planUsage.plan}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium">Chamadas de API</span>
+                        <span className="text-sm text-muted-foreground">
+                          {planUsage.apiCalls.used.toLocaleString()} / {planUsage.apiCalls.limit.toLocaleString()}
+                        </span>
+                      </div>
+                      <Progress 
+                        value={getUsagePercentage(planUsage.apiCalls.used, planUsage.apiCalls.limit)}
+                        className="h-2"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium">Disparos de Mensagem</span>
+                        <span className="text-sm text-muted-foreground">
+                          {planUsage.dispatches.used.toLocaleString()} / {planUsage.dispatches.limit.toLocaleString()}
+                        </span>
+                      </div>
+                      <Progress 
+                        value={getUsagePercentage(planUsage.dispatches.used, planUsage.dispatches.limit)}
+                        className="h-2"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium">Requisições de AI</span>
+                        <span className="text-sm text-muted-foreground">
+                          {planUsage.aiRequests.used} / {planUsage.aiRequests.limit}
+                        </span>
+                      </div>
+                      <Progress 
+                        value={getUsagePercentage(planUsage.aiRequests.used, planUsage.aiRequests.limit)}
+                        className="h-2"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pacotes de Comunicação</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">SMS (Infobip)</span>
+                        <Badge variant="outline">
+                          {planUsage.smsPackage.used} / {planUsage.smsPackage.limit}
+                        </Badge>
+                      </div>
+                      <Progress 
+                        value={getUsagePercentage(planUsage.smsPackage.used, planUsage.smsPackage.limit)}
+                        className="h-2"
+                      />
+                    </div>
+
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">WhatsApp</span>
+                        <Badge variant="outline">
+                          {planUsage.whatsappPackage.used} / {planUsage.whatsappPackage.limit}
+                        </Badge>
+                      </div>
+                      <Progress 
+                        value={getUsagePercentage(planUsage.whatsappPackage.used, planUsage.whatsappPackage.limit)}
+                        className="h-2"
+                      />
+                    </div>
+
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">Email</span>
+                        <Badge variant="outline">
+                          {planUsage.emailPackage.used} / {planUsage.emailPackage.limit}
+                        </Badge>
+                      </div>
+                      <Progress 
+                        value={getUsagePercentage(planUsage.emailPackage.used, planUsage.emailPackage.limit)}
+                        className="h-2"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t">
+                    <Button className="w-full">
+                      Upgrade de Plano
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
