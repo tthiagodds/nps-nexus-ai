@@ -95,12 +95,12 @@ export default function Layout({ children }: LayoutProps) {
                     {user?.foto_perfil ? (
                       <img 
                         src={user.foto_perfil} 
-                        alt={user.name || 'Usuário'} 
+                        alt={user.nome || 'Usuário'} 
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
                       <AvatarFallback className="bg-primary text-primary-foreground">
-                        {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
+                        {user?.nome ? user.nome.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
                       </AvatarFallback>
                     )}
                   </Avatar>
@@ -122,7 +122,7 @@ export default function Layout({ children }: LayoutProps) {
                       {user?.foto_perfil ? (
                         <img 
                           src={user.foto_perfil} 
-                          alt={user.name || 'Usuário'} 
+                          alt={user.nome || 'Usuário'} 
                           className="w-full h-full rounded-full object-cover"
                         />
                       ) : (
@@ -132,7 +132,7 @@ export default function Layout({ children }: LayoutProps) {
                       )}
                     </Avatar>
                     <div>
-                      <p className="font-medium">{user?.name || 'Usuário'}</p>
+                      <p className="font-medium">{user?.nome || 'Usuário'}</p>
                       <p className="text-sm text-muted-foreground">{user?.email || 'email@empresa.com'}</p>
                       <p className="text-xs text-muted-foreground">Empresa: {user?.id_empresa || 'N/A'}</p>
                     </div>

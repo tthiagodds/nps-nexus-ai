@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("admin");
+  const [username, setUsername] = useState("tthiago.dds@gmail.com");
   const [password, setPassword] = useState("password");
   const [idEmpresa, setIdEmpresa] = useState("1");
   const [error, setError] = useState("");

@@ -2,12 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
   id: string;
-  name: string;
+  id_empresa: number;
+  nome: string;
   username: string;
   email: string;
-  status: string;
+  status: number;
   foto_perfil: string | null;
-  id_empresa: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface AuthContextType {
@@ -48,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const parsedUser = JSON.parse(storedUser);
         
         // Verificar se os dados do usuário são válidos
-        if (parsedUser && parsedUser.id && parsedUser.username) {
+        if (parsedUser && parsedUser.id && (parsedUser.username || parsedUser.email)) {
           setToken(storedToken);
           setUser(parsedUser);
         } else {
@@ -102,12 +104,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             throw new Error('Resposta do servidor incompleta. Token ou dados do usuário não encontrados.');
           }
           
+          // Mapear os dados do usuário corretamente
+          const mappedUser = {
+            id: userData.id,
+            id_empresa: userData.id_empresa,
+            nome: userData.nome,
+            username: userData.username,
+            email: userData.email,
+            status: userData.status,
+            foto_perfil: userData.foto_perfil,
+            created_at: userData.created_at,
+            updated_at: userData.updated_at
+          };
+          
           setToken(authToken);
-          setUser(userData);
+          setUser(mappedUser);
           
           // Armazenar no localStorage
           localStorage.setItem('auth_token', authToken);
-          localStorage.setItem('auth_user', JSON.stringify(userData));
+          localStorage.setItem('auth_user', JSON.stringify(mappedUser));
           return; // Login realizado com sucesso
         } else {
           // success: false com status 200

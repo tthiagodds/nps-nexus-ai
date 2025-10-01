@@ -61,14 +61,9 @@ export function Dashboard() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">
-            Bem vindo, {user?.name || 'Usuário'}!
+            Bem vindo, {user?.nome || 'Usuário'}!
           </h1>
           <p className="text-muted-foreground">Overview</p>
-          {user && (
-            <div className="mt-2 text-sm text-muted-foreground">
-              <span>Logado como: {user.username} | Empresa: {user.id_empresa}</span>
-            </div>
-          )}
         </div>
         <div className="flex items-center gap-2">
           <Dialog>
