@@ -29,10 +29,13 @@
 - ✅ Verificação de token expirado
 
 ### 5. Interface do Usuário
-- ✅ Sidebar com informações do usuário
-- ✅ Menu do usuário com opção de logout
+- ✅ Sidebar com informações do usuário e opção de logout
+- ✅ Header com perfil do usuário no canto superior direito
+- ✅ Menu do usuário com opções: Editar Perfil, Configurações, Sair da Conta
 - ✅ Dashboard personalizado com nome do usuário
 - ✅ Exibição de informações da empresa
+- ✅ Avatar com iniciais do usuário ou foto de perfil
+- ✅ Múltiplas opções de logout (sidebar e header)
 
 ### 6. Utilitários de API
 - ✅ Cliente HTTP configurado
@@ -107,7 +110,8 @@ A API pode retornar as seguintes estruturas e o sistema trata todas elas:
 
 ### 4. Funcionalidades Adicionais
 - **Logout Robusto**: 
-  - Clique no avatar do usuário no sidebar e selecione "Sair"
+  - **Sidebar**: Clique no avatar do usuário no sidebar esquerdo e selecione "Sair"
+  - **Header**: Clique no avatar no canto superior direito e selecione "Sair da Conta"
   - Limpeza completa do localStorage e estado da aplicação
   - Redirecionamento automático para login
   - Fallback para casos de erro durante logout
@@ -115,6 +119,7 @@ A API pode retornar as seguintes estruturas e o sistema trata todas elas:
 - **Sessão Persistente**: O login é mantido entre recarregamentos da página
 - **Redirecionamento**: Após login, você é redirecionado para a página solicitada
 - **Validação de Dados**: Verificação de integridade dos dados do usuário no localStorage
+- **Perfil do Usuário**: Menu completo com opções de edição e configurações
 
 ## Estrutura de Arquivos
 

@@ -6,12 +6,25 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLogout } from "@/hooks/useLogout";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const { user } = useAuth();
+  const { performLogout } = useLogout();
+  
+  const handleLogout = async () => {
+    try {
+      await performLogout();
+    } catch (error) {
+      console.error('Erro durante logout:', error);
+    }
+  };
+
   const notifications = [
     { id: 1, title: "Nova resposta NPS", message: "Cliente João Silva respondeu a pesquisa", time: "2 min", unread: true },
     { id: 2, title: "Campanha finalizada", message: "Campanha Q4 2024 foi finalizada", time: "1h", unread: true },
@@ -79,9 +92,17 @@ export default function Layout({ children }: LayoutProps) {
               <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Avatar>
-                    <AvatarFallback>
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
+                    {user?.foto_perfil ? (
+                      <img 
+                        src={user.foto_perfil} 
+                        alt={user.name || 'Usuário'} 
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                 </Button>
               </DialogTrigger>
@@ -98,13 +119,22 @@ export default function Layout({ children }: LayoutProps) {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
                     <Avatar className="h-12 w-12">
-                      <AvatarFallback>
-                        <User className="h-6 w-6" />
-                      </AvatarFallback>
+                      {user?.foto_perfil ? (
+                        <img 
+                          src={user.foto_perfil} 
+                          alt={user.name || 'Usuário'} 
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <AvatarFallback>
+                          <User className="h-6 w-6" />
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                     <div>
-                      <p className="font-medium">Admin User</p>
-                      <p className="text-sm text-muted-foreground">admin@sentai.com</p>
+                      <p className="font-medium">{user?.name || 'Usuário'}</p>
+                      <p className="text-sm text-muted-foreground">{user?.email || 'email@empresa.com'}</p>
+                      <p className="text-xs text-muted-foreground">Empresa: {user?.id_empresa || 'N/A'}</p>
                     </div>
                   </div>
                   
@@ -120,7 +150,11 @@ export default function Layout({ children }: LayoutProps) {
                       Configurações da Conta
                     </Button>
                     <Separator />
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive">
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={handleLogout}
+                    >
                       <LogOut className="h-4 w-4" />
                       Sair da Conta
                     </Button>
