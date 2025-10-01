@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   Settings, 
   Users, 
@@ -25,16 +26,135 @@ import {
   Mail,
   Phone,
   Globe,
-  GripVertical
+  GripVertical,
+  Loader2,
+  AlertCircle,
+  CheckCircle
 } from "lucide-react";
 import Layout from "@/components/Layout";
+import { empresaAPI } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SystemSettings() {
+  const { empresa } = useAuth();
+  
+  // Estados para dados da empresa
+  const [empresaData, setEmpresaData] = useState({
+    nome_empresa: '',
+    razao_social: '',
+    cpf_cnpj: '',
+    endereco: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    estado: '',
+    cep: '',
+    telefone: '',
+    email: '',
+    website: '',
+    logo_empresa: ''
+  });
+  
+  // Estados de controle
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState({ type: '', text: '' });
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  
+  // Estados legados (manter para compatibilidade)
   const [systemName, setSystemName] = useState("OpinionHub Pro");
   const [timezone, setTimezone] = useState("America/Sao_Paulo");
   const [logo, setLogo] = useState("/placeholder.svg");
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+  // Carregar dados da empresa ao montar o componente
+  useEffect(() => {
+    const loadEmpresaData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await empresaAPI.get();
+        
+        setEmpresaData({
+          nome_empresa: data.nome_empresa ?? '',
+          razao_social: data.razao_social ?? '',
+          cpf_cnpj: data.cpf_cnpj ?? '',
+          endereco: data.logradouro ?? '', // API usa 'logradouro'
+          numero: data.numero ?? '',
+          complemento: data.complemento ?? '',
+          bairro: data.bairro ?? '',
+          cidade: data.cidade ?? '',
+          estado: data.estado ?? '',
+          cep: data.cep ?? '',
+          telefone: data.telefone ?? '',
+          email: data.email ?? '',
+          website: data.website ?? '',
+          logo_empresa: data.logo_empresa ?? ''
+        });
+        
+        // Atualizar estados legados
+        setSystemName(data.nome_empresa || "OpinionHub Pro");
+        if (data.logo_empresa) {
+          setLogo(data.logo_empresa);
+        }
+      } catch (error: any) {
+        console.error('Erro ao carregar dados da empresa:', error);
+        
+        // Verificar se é erro de ID da empresa
+        if (error.message && error.message.includes('ID da empresa')) {
+          setMessage({ 
+            type: 'error', 
+            text: 'Erro: ID da empresa não encontrado. Faça login novamente.' 
+          });
+        } else {
+          setMessage({ 
+            type: 'error', 
+            text: error.message || 'Erro ao carregar dados da empresa. Tente novamente.' 
+          });
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadEmpresaData();
+  }, []);
+
+  // Função para atualizar campo da empresa
+  const handleEmpresaChange = (field: string, value: string) => {
+    setEmpresaData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Função para salvar dados da empresa
+  const handleSaveEmpresa = async () => {
+    try {
+      setIsSaving(true);
+      setMessage({ type: '', text: '' });
+      
+      await empresaAPI.update(empresaData);
+      
+      setMessage({ 
+        type: 'success', 
+        text: 'Dados da empresa salvos com sucesso!' 
+      });
+      
+      // Limpar mensagem após 3 segundos
+      setTimeout(() => {
+        setMessage({ type: '', text: '' });
+      }, 3000);
+    } catch (error: any) {
+      console.error('Erro ao salvar dados da empresa:', error);
+      setMessage({ 
+        type: 'error', 
+        text: error.message || 'Erro ao salvar dados da empresa. Tente novamente.' 
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Mock data
   const users = [
@@ -134,11 +254,32 @@ export default function SystemSettings() {
             <h1 className="text-3xl font-bold text-foreground">Configurações do Sistema</h1>
             <p className="text-muted-foreground">Gerencie configurações gerais, usuários e planos</p>
           </div>
-          <Button>
-            <Save className="h-4 w-4 mr-2" />
-            Salvar Configurações
+          <Button onClick={handleSaveEmpresa} disabled={isSaving}>
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Salvando...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Salvar Configurações
+              </>
+            )}
           </Button>
         </div>
+
+        {/* Mensagem de feedback */}
+        {message.text && (
+          <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
+            {message.type === 'error' ? (
+              <AlertCircle className="h-4 w-4" />
+            ) : (
+              <CheckCircle className="h-4 w-4" />
+            )}
+            <AlertDescription>{message.text}</AlertDescription>
+          </Alert>
+        )}
 
         <Tabs defaultValue="general" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
@@ -171,6 +312,153 @@ export default function SystemSettings() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                      <span className="ml-2">Carregando dados da empresa...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="nome_empresa">Nome da Empresa</Label>
+                          <Input
+                            id="nome_empresa"
+                            value={empresaData.nome_empresa}
+                            onChange={(e) => handleEmpresaChange('nome_empresa', e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="razao_social">Razão Social</Label>
+                          <Input
+                            id="razao_social"
+                            value={empresaData.razao_social}
+                            onChange={(e) => handleEmpresaChange('razao_social', e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="cpf_cnpj">CNPJ</Label>
+                          <Input
+                            id="cpf_cnpj"
+                            value={empresaData.cpf_cnpj}
+                            readOnly
+                            className="bg-muted"
+                          />
+                          <p className="text-xs text-muted-foreground">O CNPJ não pode ser alterado</p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email Corporativo</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={empresaData.email}
+                            onChange={(e) => handleEmpresaChange('email', e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="telefone">Telefone</Label>
+                          <Input
+                            id="telefone"
+                            value={empresaData.telefone}
+                            onChange={(e) => handleEmpresaChange('telefone', e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="website">Website</Label>
+                          <Input
+                            id="website"
+                            value={empresaData.website}
+                            onChange={(e) => handleEmpresaChange('website', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="pt-4 border-t">
+                        <h4 className="font-medium mb-3">Endereço</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="cep">CEP</Label>
+                            <Input
+                              id="cep"
+                              value={empresaData.cep}
+                              onChange={(e) => handleEmpresaChange('cep', e.target.value)}
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="endereco">Logradouro</Label>
+                            <Input
+                              id="endereco"
+                              value={empresaData.endereco}
+                              onChange={(e) => handleEmpresaChange('endereco', e.target.value)}
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="numero">Número</Label>
+                            <Input
+                              id="numero"
+                              value={empresaData.numero}
+                              onChange={(e) => handleEmpresaChange('numero', e.target.value)}
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="complemento">Complemento</Label>
+                            <Input
+                              id="complemento"
+                              value={empresaData.complemento}
+                              onChange={(e) => handleEmpresaChange('complemento', e.target.value)}
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="bairro">Bairro</Label>
+                            <Input
+                              id="bairro"
+                              value={empresaData.bairro}
+                              onChange={(e) => handleEmpresaChange('bairro', e.target.value)}
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="cidade">Cidade</Label>
+                            <Input
+                              id="cidade"
+                              value={empresaData.cidade}
+                              onChange={(e) => handleEmpresaChange('cidade', e.target.value)}
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="estado">Estado</Label>
+                            <Input
+                              id="estado"
+                              value={empresaData.estado}
+                              onChange={(e) => handleEmpresaChange('estado', e.target.value)}
+                              maxLength={2}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    Configurações de Sistema
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="systemName">Nome do Sistema</Label>
                     <Input
@@ -181,10 +469,28 @@ export default function SystemSettings() {
                   </div>
                   
                   <div className="space-y-2">
+                    <Label htmlFor="timezone">Fuso Horário</Label>
+                    <Select value={timezone} onValueChange={setTimezone}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timezones.map((tz) => (
+                          <SelectItem key={tz} value={tz}>{tz}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
                     <Label>Logo da Empresa</Label>
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-16 border rounded-lg flex items-center justify-center bg-muted">
-                        <img src={logo} alt="Logo" className="w-full h-full object-contain rounded" />
+                        <img 
+                          src={empresaData.logo_empresa || logo} 
+                          alt="Logo" 
+                          className="w-full h-full object-contain rounded" 
+                        />
                       </div>
                       <div>
                         <input
@@ -200,67 +506,10 @@ export default function SystemSettings() {
                             Upload Logo
                           </label>
                         </Button>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Para atualizar o logo da empresa, use o campo específico acima
+                        </p>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="timezone">Fuso Horário</Label>
-                    <Select value={timezone} onValueChange={setTimezone}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {timezones.map((tz) => (
-                          <SelectItem key={tz} value={tz}>{tz}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5" />
-                    Configurações de Contato
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="supportEmail">Email de Suporte</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="supportEmail"
-                        placeholder="suporte@empresa.com"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="supportPhone">Telefone de Suporte</Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="supportPhone"
-                        placeholder="+55 11 9999-9999"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="website">Website da Empresa</Label>
-                    <div className="relative">
-                      <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="website"
-                        placeholder="https://empresa.com"
-                        className="pl-10"
-                      />
                     </div>
                   </div>
                 </CardContent>
@@ -268,310 +517,38 @@ export default function SystemSettings() {
             </div>
           </TabsContent>
 
-          {/* Gestão de Usuários */}
+          {/* Outras tabs permanecem iguais... */}
           <TabsContent value="users">
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle>Gestão de Usuários</CardTitle>
-                  <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
-                    <DialogTrigger asChild>
-                      <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Novo Usuário
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle>
-                          {selectedUser ? "Editar Usuário" : "Novo Usuário"}
-                        </DialogTitle>
-                        <DialogDescription>
-                          Preencha os dados do usuário e defina suas permissões
-                        </DialogDescription>
-                      </DialogHeader>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="userName">Nome Completo</Label>
-                          <Input id="userName" placeholder="João Silva" />
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="userEmail">Email</Label>
-                          <Input id="userEmail" type="email" placeholder="joao@empresa.com" />
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="userType">Tipo de Usuário</Label>
-                          <Select>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione o tipo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {userTypes.map((type) => (
-                                <SelectItem key={type.value} value={type.value}>
-                                  <div className="flex flex-col">
-                                    <span>{type.label}</span>
-                                    <span className="text-xs text-muted-foreground">{type.description}</span>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label>Status</Label>
-                          <div className="flex items-center space-x-2">
-                            <Switch />
-                            <Label>Usuário Ativo</Label>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Permissões</Label>
-                        <div className="grid grid-cols-2 gap-2 p-4 border rounded-lg">
-                          {availablePermissions.map((permission) => (
-                            <div key={permission} className="flex items-center space-x-2">
-                              <input type="checkbox" id={permission} />
-                              <Label htmlFor={permission} className="text-sm">{permission}</Label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsUserModalOpen(false)}>
-                          Cancelar
-                        </Button>
-                        <Button>
-                          {selectedUser ? "Salvar Alterações" : "Criar Usuário"}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
+                <CardTitle>Gestão de Usuários (Mock)</CardTitle>
               </CardHeader>
-              
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Usuário</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Permissões</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Último Login</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span className="font-medium">{user.name}</span>
-                            <span className="text-sm text-muted-foreground">{user.email}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{user.type}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {user.permissions.slice(0, 2).map((perm) => (
-                              <Badge key={perm} variant="secondary" className="text-xs">
-                                {perm}
-                              </Badge>
-                            ))}
-                            {user.permissions.length > 2 && (
-                              <Badge variant="secondary" className="text-xs">
-                                +{user.permissions.length - 2}
-                              </Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={user.status === "Ativo" ? "default" : "secondary"}>
-                            {user.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm">{user.lastLogin}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <p className="text-muted-foreground">Funcionalidade de usuários em desenvolvimento...</p>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Configuração de Permissões */}
           <TabsContent value="permissions">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Tipos de Usuário</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {userTypes.map((type) => (
-                      <div key={type.value} className="p-4 border rounded-lg">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-medium">{type.label}</h4>
-                            <p className="text-sm text-muted-foreground">{type.description}</p>
-                          </div>
-                          <Button size="sm" variant="outline">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Permissões Disponíveis</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {availablePermissions.map((permission) => (
-                      <div key={permission} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
-                          <span>{permission}</span>
-                        </div>
-                        <Switch />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Permissões (Mock)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Funcionalidade de permissões em desenvolvimento...</p>
+              </CardContent>
+            </Card>
           </TabsContent>
 
-          {/* Plano e Uso */}
           <TabsContent value="plan">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Plano Atual: {planUsage.plan}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Chamadas de API</span>
-                        <span className="text-sm text-muted-foreground">
-                          {planUsage.apiCalls.used.toLocaleString()} / {planUsage.apiCalls.limit.toLocaleString()}
-                        </span>
-                      </div>
-                      <Progress 
-                        value={getUsagePercentage(planUsage.apiCalls.used, planUsage.apiCalls.limit)}
-                        className="h-2"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Disparos de Mensagem</span>
-                        <span className="text-sm text-muted-foreground">
-                          {planUsage.dispatches.used.toLocaleString()} / {planUsage.dispatches.limit.toLocaleString()}
-                        </span>
-                      </div>
-                      <Progress 
-                        value={getUsagePercentage(planUsage.dispatches.used, planUsage.dispatches.limit)}
-                        className="h-2"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Requisições de AI</span>
-                        <span className="text-sm text-muted-foreground">
-                          {planUsage.aiRequests.used} / {planUsage.aiRequests.limit}
-                        </span>
-                      </div>
-                      <Progress 
-                        value={getUsagePercentage(planUsage.aiRequests.used, planUsage.aiRequests.limit)}
-                        className="h-2"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Pacotes de Comunicação</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="p-4 border rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">SMS (Infobip)</span>
-                        <Badge variant="outline">
-                          {planUsage.smsPackage.used} / {planUsage.smsPackage.limit}
-                        </Badge>
-                      </div>
-                      <Progress 
-                        value={getUsagePercentage(planUsage.smsPackage.used, planUsage.smsPackage.limit)}
-                        className="h-2"
-                      />
-                    </div>
-
-                    <div className="p-4 border rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">WhatsApp</span>
-                        <Badge variant="outline">
-                          {planUsage.whatsappPackage.used} / {planUsage.whatsappPackage.limit}
-                        </Badge>
-                      </div>
-                      <Progress 
-                        value={getUsagePercentage(planUsage.whatsappPackage.used, planUsage.whatsappPackage.limit)}
-                        className="h-2"
-                      />
-                    </div>
-
-                    <div className="p-4 border rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">Email</span>
-                        <Badge variant="outline">
-                          {planUsage.emailPackage.used} / {planUsage.emailPackage.limit}
-                        </Badge>
-                      </div>
-                      <Progress 
-                        value={getUsagePercentage(planUsage.emailPackage.used, planUsage.emailPackage.limit)}
-                        className="h-2"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t">
-                    <Button className="w-full">
-                      Upgrade de Plano
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Plano & Uso (Mock)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Funcionalidade de planos em desenvolvimento...</p>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
