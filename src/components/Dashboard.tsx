@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   Heart, 
   Send, 
@@ -28,6 +29,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function Dashboard() {
+  const { user } = useAuth();
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2025, 0, 1),
     to: new Date(2025, 0, 22),
@@ -58,8 +60,15 @@ export function Dashboard() {
       {/* Welcome Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Bem vindo, David!</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Bem vindo, {user?.name || 'Usuário'}!
+          </h1>
           <p className="text-muted-foreground">Overview</p>
+          {user && (
+            <div className="mt-2 text-sm text-muted-foreground">
+              <span>Logado como: {user.username} | Empresa: {user.id_empresa}</span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Dialog>

@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -30,48 +32,52 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<Index />} />
-          
-          {/* Configurações Gerais */}
-          <Route path="/campaigns" element={<Campaigns />} />
-          <Route path="/channel-config" element={<ChannelConfig />} />
-          <Route path="/communication-templates" element={<CommunicationTemplates />} />
-          <Route path="/opinion-settings" element={<OpinionSettings />} />
-          <Route path="/database" element={<DatabasePage />} />
-          
-          {/* Relatórios */}
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/reports/automation" element={<AutomationReports />} />
-          <Route path="/reports/opinion" element={<OpinionReports />} />
-          <Route path="/reports/dispatch" element={<DispatchReports />} />
-          
-          {/* Inteligência Artificial */}
-          <Route path="/ai-settings" element={<AISettings />} />
-          <Route path="/ai-categorization" element={<AICategorization />} />
-          
-          {/* Comunicação */}
-          <Route path="/blacklist" element={<Blacklist />} />
-          <Route path="/automations" element={<Automations />} />
-          <Route path="/dispatches" element={<Dispatches />} />
-          <Route path="/hsm-templates" element={<HSMTemplates />} />
-          <Route path="/user-management" element={<UserManagement />} />
-          <Route path="/system-settings" element={<SystemSettings />} />
-          
-          {/* Survey Response Page */}
-          <Route path="/survey/:campaignId" element={<SurveyResponse />} />
-          
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            {/* Rota pública para resposta de pesquisa */}
+            <Route path="/survey/:campaignId" element={<SurveyResponse />} />
+            
+            {/* Rotas protegidas */}
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            
+            {/* Configurações Gerais */}
+            <Route path="/campaigns" element={<ProtectedRoute><Campaigns /></ProtectedRoute>} />
+            <Route path="/channel-config" element={<ProtectedRoute><ChannelConfig /></ProtectedRoute>} />
+            <Route path="/communication-templates" element={<ProtectedRoute><CommunicationTemplates /></ProtectedRoute>} />
+            <Route path="/opinion-settings" element={<ProtectedRoute><OpinionSettings /></ProtectedRoute>} />
+            <Route path="/database" element={<ProtectedRoute><DatabasePage /></ProtectedRoute>} />
+            
+            {/* Relatórios */}
+            <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+            <Route path="/reports/automation" element={<ProtectedRoute><AutomationReports /></ProtectedRoute>} />
+            <Route path="/reports/opinion" element={<ProtectedRoute><OpinionReports /></ProtectedRoute>} />
+            <Route path="/reports/dispatch" element={<ProtectedRoute><DispatchReports /></ProtectedRoute>} />
+            
+            {/* Inteligência Artificial */}
+            <Route path="/ai-settings" element={<ProtectedRoute><AISettings /></ProtectedRoute>} />
+            <Route path="/ai-categorization" element={<ProtectedRoute><AICategorization /></ProtectedRoute>} />
+            
+            {/* Comunicação */}
+            <Route path="/blacklist" element={<ProtectedRoute><Blacklist /></ProtectedRoute>} />
+            <Route path="/automations" element={<ProtectedRoute><Automations /></ProtectedRoute>} />
+            <Route path="/dispatches" element={<ProtectedRoute><Dispatches /></ProtectedRoute>} />
+            <Route path="/hsm-templates" element={<ProtectedRoute><HSMTemplates /></ProtectedRoute>} />
+            <Route path="/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
+            <Route path="/system-settings" element={<ProtectedRoute><SystemSettings /></ProtectedRoute>} />
+            
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
