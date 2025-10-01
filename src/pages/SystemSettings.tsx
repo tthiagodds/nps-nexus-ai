@@ -53,6 +53,10 @@ export default function SystemSettings() {
     telefone: '',
     email: '',
     website: '',
+    site_empresa: '',
+    responsavel: '',
+    nome_contato: '',
+    telefone_contato: '',
     logo_empresa: ''
   });
   
@@ -89,6 +93,10 @@ export default function SystemSettings() {
           telefone: data.telefone ?? '',
           email: data.email ?? '',
           website: data.website ?? '',
+          site_empresa: data.site_empresa ?? '',
+          responsavel: data.responsavel ?? '',
+          nome_contato: data.nome_contato ?? '',
+          telefone_contato: data.telefone_contato ?? '',
           logo_empresa: data.logo_empresa ?? ''
         });
         
@@ -303,14 +311,15 @@ export default function SystemSettings() {
 
           {/* Configurações Gerais */}
           <TabsContent value="general">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Building className="h-5 w-5" />
-                    Informações da Empresa
-                  </CardTitle>
-                </CardHeader>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-7">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Building className="h-5 w-5" />
+                      Informações da Empresa
+                    </CardTitle>
+                  </CardHeader>
                 <CardContent className="space-y-4">
                   {isLoading ? (
                     <div className="flex items-center justify-center py-8">
@@ -365,15 +374,6 @@ export default function SystemSettings() {
                             id="telefone"
                             value={empresaData.telefone}
                             onChange={(e) => handleEmpresaChange('telefone', e.target.value)}
-                          />
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="website">Website</Label>
-                          <Input
-                            id="website"
-                            value={empresaData.website}
-                            onChange={(e) => handleEmpresaChange('website', e.target.value)}
                           />
                         </div>
                       </div>
@@ -449,13 +449,81 @@ export default function SystemSettings() {
                     </>
                   )}
                 </CardContent>
+                </Card>
+              </div>
+              
+              <div className="lg:col-span-5 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Globe className="h-5 w-5" />
+                      Configurações de Contato
+                    </CardTitle>
+                  </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="responsavel">Responsável Empresa</Label>
+                    <div className="relative">
+                      <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="responsavel"
+                        value={empresaData.responsavel}
+                        onChange={(e) => handleEmpresaChange('responsavel', e.target.value)}
+                        placeholder="Nome do responsável"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="nome_contato">Nome do Contato</Label>
+                    <div className="relative">
+                      <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="nome_contato"
+                        value={empresaData.nome_contato}
+                        onChange={(e) => handleEmpresaChange('nome_contato', e.target.value)}
+                        placeholder="Nome do contato"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="telefone_contato">Telefone de Contato</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="telefone_contato"
+                        value={empresaData.telefone_contato}
+                        onChange={(e) => handleEmpresaChange('telefone_contato', e.target.value)}
+                        placeholder="+55 11 9999-9999"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="site_empresa">Website da Empresa</Label>
+                    <div className="relative">
+                      <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="site_empresa"
+                        value={empresaData.site_empresa}
+                        onChange={(e) => handleEmpresaChange('site_empresa', e.target.value)}
+                        placeholder="https://empresa.com"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5" />
-                    Configurações de Sistema
+                    <Settings className="h-5 w-5" />
+                    Padrões do Sistema
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -514,6 +582,7 @@ export default function SystemSettings() {
                   </div>
                 </CardContent>
               </Card>
+              </div>
             </div>
           </TabsContent>
 

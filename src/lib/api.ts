@@ -95,6 +95,7 @@ interface EmpresaData {
   nome_contato?: string;
   email?: string;
   website?: string;
+  site_empresa?: string;
   id_segmento?: number;
   logo_empresa?: string;
   status?: number;
@@ -118,6 +119,10 @@ interface FormEmpresaData {
   telefone?: string;
   email?: string;
   website?: string;
+  site_empresa?: string;
+  responsavel?: string;
+  nome_contato?: string;
+  telefone_contato?: string;
   logo_empresa?: string;
 }
 
@@ -171,6 +176,10 @@ export const empresaAPI = {
       telefone: data.telefone,
       email: data.email,
       website: data.website,
+      site_empresa: data.site_empresa,
+      responsavel: data.responsavel,
+      nome_contato: data.nome_contato,
+      telefone_contato: data.telefone_contato,
       logo_empresa: data.logo_empresa
     };
     
